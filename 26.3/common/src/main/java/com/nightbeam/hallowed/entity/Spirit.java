@@ -162,7 +162,7 @@ public class Spirit extends Monster {
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         boolean hit = super.doHurtTarget(level, target);
         if (hit && target instanceof LivingEntity living) {
-            living.addEffect(new MobEffectInstance(ModContent.holder(ModContent.SPOOKED), 120, 0), this);
+            living.addEffect(new MobEffectInstance(ModContent.holder(ModContent.SPOOKED), 120, 0, false, false, true), this);
         }
         return hit;
     }

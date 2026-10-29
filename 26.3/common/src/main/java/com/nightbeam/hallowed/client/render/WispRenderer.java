@@ -15,7 +15,9 @@ import net.minecraft.util.Mth;
 
 /**
  * A will-o'-the-wisp: a soft halo, a flickering flame and a white-hot core, all additive and facing the camera.
- * Foxfire green-gold, or violet for a cursed wisp. It brightens while it leads and dims while it waits.
+ * Foxfire green-gold, or violet for a cursed wisp. It brightens while it leads and dims while it waits. The glow
+ * textures are premultiplied (alpha follows brightness), so the additive pipeline's alpha cutout drops the dark fringe
+ * and nothing behind a wisp is cut out around its glow.
  */
 public class WispRenderer extends EntityRenderer<Wisp, WispRenderer.State> {
     private static final RenderType HALO = glow("halo");
@@ -62,16 +64,16 @@ public class WispRenderer extends EntityRenderer<Wisp, WispRenderer.State> {
         pose.rotate(camera.orientation);
         float halo = 0.85f + 0.08f * Mth.sin(t * 0.13f);
         float hb = bright * 0.5f;
-        collector.submitCustomGeometry(pose, HALO, (p, vc) -> GlowQuads.square(vc, p, halo, r1 * hb, g1 * hb, b1 * hb));
+        collector.submitCustomGeometry(pose, HALO, (p, vc) -> GlowQuads.square(vc, p, halo, r1 * hb, g1 * hb, b1 * hb, 1.0f));
         float fb = bright * 0.9f;
         pose.pushPose();
         pose.translate(0, 0.06, 0);
         float flame = 0.34f;
-        collector.submitCustomGeometry(pose, FLAME, (p, vc) -> GlowQuads.square(vc, p, flame, r2 * fb, g2 * fb, b2 * fb));
+        collector.submitCustomGeometry(pose, FLAME, (p, vc) -> GlowQuads.square(vc, p, flame, r2 * fb, g2 * fb, b2 * fb, 1.0f));
         pose.popPose();
         float core = 0.13f + 0.02f * Mth.sin(t * 0.9f);
         float cb = Math.min(1, bright * 1.1f);
-        collector.submitCustomGeometry(pose, CORE, (p, vc) -> GlowQuads.square(vc, p, core, cb, cb, cb * 0.92f));
+        collector.submitCustomGeometry(pose, CORE, (p, vc) -> GlowQuads.square(vc, p, core, cb, cb, cb * 0.92f, 1.0f));
         pose.popPose();
         super.submit(state, pose, collector, camera);
     }

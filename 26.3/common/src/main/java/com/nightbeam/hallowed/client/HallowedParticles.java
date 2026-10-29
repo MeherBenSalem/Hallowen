@@ -1,5 +1,6 @@
 package com.nightbeam.hallowed.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -8,6 +9,8 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Hallowed's particles: rising embers, falling autumn leaves, the wisps' foxfire, pale soul motes and candy sparkles.
@@ -15,6 +18,15 @@ import net.minecraft.util.RandomSource;
  */
 public final class HallowedParticles {
     private HallowedParticles() {
+    }
+
+    /**
+     * Ambient motes are scattered around the camera; one that lands right in front of the lens would fill the screen,
+     * so those are skipped.
+     */
+    private static boolean nearCamera(double x, double y, double z, double distance) {
+        Vec3 eye = Minecraft.getInstance().gameRenderer.mainCamera().position();
+        return eye.distanceToSqr(x, y, z) < distance * distance;
     }
 
     /** A drifting, fading, optionally glowing quad. */
@@ -110,8 +122,9 @@ public final class HallowedParticles {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy, double dz,
-                RandomSource random) {
+        public @Nullable Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy,
+                double dz, RandomSource random) {
+            if (nearCamera(x, y, z, 1.5)) return null;
             Mote p = new Mote(level, x, y, z, dx, dy + 0.012 + random.nextFloat() * 0.01, dz, sprites, 40 + random.nextInt(50),
                     0.045f + random.nextFloat() * 0.04f, 0.0009f, true, true, 0, random);
             float warm = random.nextFloat() * 0.25f;
@@ -128,8 +141,9 @@ public final class HallowedParticles {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy, double dz,
-                RandomSource random) {
+        public @Nullable Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy,
+                double dz, RandomSource random) {
+            if (nearCamera(x, y, z, 4.0)) return null;
             return new Leaf(level, x, y, z, sprites, random);
         }
     }
@@ -160,8 +174,9 @@ public final class HallowedParticles {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy, double dz,
-                RandomSource random) {
+        public @Nullable Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy,
+                double dz, RandomSource random) {
+            if (nearCamera(x, y, z, 1.5)) return null;
             Mote p = new Mote(level, x, y, z, dx, dy + 0.004, dz, sprites, 50 + random.nextInt(50), 0.04f + random.nextFloat() * 0.04f,
                     0.0007f, true, true, 0, random);
             float t = random.nextFloat() * 0.2f;

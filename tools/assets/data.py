@@ -234,6 +234,6 @@ def jukebox_songs():
     return {'witching_hour': {
         'comparator_output': 13,
         'description': {'translate': f'jukebox_song.{NS}.witching_hour'},
-        'length_in_seconds': 132.0,
+        'length_in_seconds': 129.0,
         'sound_event': f'{NS}:music_disc.witching_hour',
     }}

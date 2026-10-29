@@ -45,6 +45,9 @@ public class Wisp extends Entity {
     private int lonely;
     private int arriveTicks;
     private int hum;
+    /** Failed searches for somewhere to lead; the wisp gives up and fades after a few. */
+    private int searches;
+    private int searchCooldown;
     private double hoverY = Double.NaN;
 
     public Wisp(EntityType<? extends Wisp> type, Level level) {
@@ -113,10 +116,16 @@ public class Wisp extends Entity {
         switch (state()) {
             case IDLE -> {
                 hover(Vec3.ZERO);
-                if (distanceTo(player) < 14) {
+                if (distanceTo(player) < 14 && --searchCooldown <= 0) {
                     destination = chooseDestination(level, player);
-                    entityData.set(STATE, LEADING);
-                    playSound(ModContent.WISP_CHIME.get(), 1.0f, 1.0f);
+                    if (destination != null) {
+                        entityData.set(STATE, LEADING);
+                        playSound(ModContent.WISP_CHIME.get(), 1.0f, 1.0f);
+                    } else if (++searches >= 6) {
+                        vanish(level, false);
+                    } else {
+                        searchCooldown = 100;
+                    }
                 }
             }
             case LEADING, WAITING -> lead(level, player);
@@ -127,7 +136,10 @@ public class Wisp extends Entity {
     }
 
     private void lead(ServerLevel level, Player player) {
-        if (destination == null) destination = chooseDestination(level, player);
+        if (destination == null) {
+            entityData.set(STATE, IDLE);
+            return;
+        }
         Vec3 goal = Vec3.atBottomCenterOf(destination);
         double flat = Math.sqrt(Mth.square(goal.x - getX()) + Mth.square(goal.z - getZ()));
         if (flat < 1.2) {
@@ -185,13 +197,14 @@ public class Wisp extends Entity {
         }
     }
 
-    private BlockPos chooseDestination(ServerLevel level, Player player) {
+    /** Somewhere on open ground ahead of the wisp, near the player's height; null when there is nowhere fitting. */
+    private @Nullable BlockPos chooseDestination(ServerLevel level, Player player) {
         Vec3 away = new Vec3(getX() - player.getX(), 0, getZ() - player.getZ());
         if (away.lengthSqr() < 1.0E-3) away = new Vec3(1, 0, 0);
         double base = Math.atan2(away.z, away.x);
-        for (int attempt = 0; attempt < 16; attempt++) {
-            double angle = base + (random.nextDouble() - 0.5) * Math.toRadians(attempt < 8 ? 100 : 220);
-            double dist = (attempt < 10 ? 38 : 22) + random.nextDouble() * 22;
+        for (int attempt = 0; attempt < 24; attempt++) {
+            double angle = base + (random.nextDouble() - 0.5) * Math.toRadians(attempt < 8 ? 100 : attempt < 16 ? 220 : 360);
+            double dist = (attempt < 10 ? 38 : attempt < 18 ? 22 : 10) + random.nextDouble() * (attempt < 18 ? 22 : 12);
             int x = Mth.floor(getX() + Math.cos(angle) * dist);
             int z = Mth.floor(getZ() + Math.sin(angle) * dist);
             if (!level.isLoaded(new BlockPos(x, 0, z))) continue;
@@ -203,8 +216,7 @@ public class Wisp extends Entity {
                 return pos;
             }
         }
-        BlockPos here = blockPosition();
-        return new BlockPos(here.getX(), groundY(level, here.getX(), here.getZ(), getY()), here.getZ());
+        return null;
     }
 
     /**

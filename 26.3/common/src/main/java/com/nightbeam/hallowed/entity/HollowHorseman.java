@@ -651,7 +651,7 @@ public class HollowHorseman extends Monster {
     public boolean doHurtTarget(ServerLevel level, Entity target) {
         boolean hit = super.doHurtTarget(level, target);
         if (hit && target instanceof LivingEntity living && random.nextInt(3) == 0) {
-            living.addEffect(new MobEffectInstance(ModContent.holder(ModContent.SPOOKED), 100, 0), this);
+            living.addEffect(new MobEffectInstance(ModContent.holder(ModContent.SPOOKED), 100, 0, false, false, true), this);
         }
         return hit;
     }

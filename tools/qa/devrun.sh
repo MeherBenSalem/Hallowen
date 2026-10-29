@@ -3,7 +3,7 @@
 #   tools/qa/devrun.sh start-server <workspace> <loader>
 #   tools/qa/devrun.sh start-client <workspace> <loader>
 #   tools/qa/devrun.sh stop-client | stop-server [<workspace>]
-# Logs go to $QA_LOGS (default /tmp/remnants-qa). Give each workspace its own QA_LOGS, server-port and rcon.port when
+# Logs go to $QA_LOGS (default /tmp/hallowed-qa). Give each workspace its own QA_LOGS, server-port and rcon.port when
 # several dev servers run at once; stop-server <workspace> then stops only that workspace's server.
 set -u
 LOGS=${QA_LOGS:-/tmp/hallowed-qa}

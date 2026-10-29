@@ -7,7 +7,14 @@ from __future__ import annotations
 
 import math
 import random
+import zlib
+
 from PIL import Image
+
+
+def stable(*parts):
+    """A hash of the parts that is the same in every run (Python's own hash() of strings is salted per process)."""
+    return zlib.crc32(repr(parts).encode('utf-8'))
 
 
 def rgb(value):

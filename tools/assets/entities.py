@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from pixel import Rng, canvas, mix, put, rgb
+from pixel import Rng, canvas, mix, put, rgb, stable
 
 
 @dataclass
@@ -65,20 +65,21 @@ SPIRIT_BOXES = [
 ]
 SPIRIT_FADE = {'head': 235, 'body': 225, 'right_arm': 200, 'left_arm': 200, 'skirt': 200, 'hem': 170, 'tail_left': 130,
                'tail_mid': 130, 'tail_right': 130}
+# The face is a dark void under the hood: H/h hood rim, d void, E/e the glowing eyes, m a faint wailing mouth.
 SPIRIT_FACE = """
-........
-........
-.kk..kk.
-.kK..Kk.
-........
-...mm...
-...mm...
-........
+HHHHHHHH
+HhddddhH
+HEEddEEH
+HeEddEeH
+HddddddH
+hdddmddh
+hddmmddh
+.hddddh.
 """
 
 
 def spirit_painter(box, face, x, y, w, h):
-    rng = Rng(hash((box.name, face, x, y)) & 0xFFFF)
+    rng = Rng(stable(box.name, face, x, y) & 0xFFFF)
     base = rgb('#e2f7f4')
     shade = rgb('#a8d6d6')
     deep = rgb('#6fa8ad')
@@ -97,21 +98,30 @@ def spirit_painter(box, face, x, y, w, h):
             c = mix(c, '#ffffff', 0.4)
     if box.name == 'head':
         if face == 'front':
-            row = SPIRIT_FACE.strip('\n').split('\n')[y]
-            ch = row[x]
-            if ch in 'kK':
-                return alpha('#14262b', 250)
+            ch = SPIRIT_FACE.strip('\n').split('\n')[y][x]
+            if ch == 'H':
+                return alpha(mix(base, '#ffffff', 0.2), a)
+            if ch == 'h':
+                return alpha(mix(shade, deep, 0.25), a - 15)
+            # The body renders full-bright, so the eyes glow from the base texture itself; the eyes layer adds a
+            # bloom on top where the renderer draws it after the shroud.
+            if ch == 'E':
+                return alpha('#e8ffff', 255)
+            if ch == 'e':
+                return alpha('#5fe0ee', 255)
             if ch == 'm':
-                return alpha('#1f3a40', 240)
-            # hood rim: darker border on the face
-            if x in (0, w - 1) or y == 0:
-                return alpha(mix(c, deep, 0.5), a)
-            return alpha(mix(c, '#ffffff', 0.15), a)
+                return alpha('#0c1c20', 245)
+            if ch == 'd':
+                # the void deepens toward the middle of the face
+                return alpha(mix('#16262b', '#0a1418', 0.5 if 1 < y < 6 else 0.0), 240)
+            return None
+        if face == 'top':
+            return alpha(mix(base, '#ffffff', 0.3), a)
         a = a - 10 * t
     if box.name.startswith('tail') or box.name == 'hem':
         a = a * (1 - 0.35 * t)
         # ragged bottoms
-        if box.name.startswith('tail') and y == h - 1 and (x + hash(box.name)) % 2 == 0:
+        if box.name.startswith('tail') and y == h - 1 and (x + stable(box.name)) % 2 == 0:
             return None
     if box.name.endswith('arm') and y >= h - 2 and face != 'top':
         c = mix(c, '#c8f4f2', 0.3)
@@ -122,12 +132,12 @@ def spirit_eyes_painter(box, face, x, y, w, h):
     if box.name != 'head' or face != 'front':
         return None
     ch = SPIRIT_FACE.strip('\n').split('\n')[y][x]
-    if ch == 'K':
+    if ch == 'E':
         return '#e8ffff'
-    if ch == 'k':
-        return '#4fd6e6'
+    if ch == 'e':
+        return '#5fe0ee'
     if ch == 'm':
-        return '#1f6f7a'
+        return '#0e3238'
     return None
 
 
@@ -161,7 +171,7 @@ IRON_DARK = ['#1c1d22', '#2e3038', '#4a4e5a']
 
 
 def horseman_painter(box, face, x, y, w, h):
-    rng = Rng(hash((box.name, face, x, y)) & 0xFFFF)
+    rng = Rng(stable(box.name, face, x, y) & 0xFFFF)
     noise = rng.random()
     t = y / max(1, h - 1)
 
@@ -310,8 +320,27 @@ def _crack(box, face, x, y):
     return k == 0 or (k == 1 and (x + y) % 3 == 0)
 
 
+def _steed_eye(face, x, y, w):
+    """Burning eyes: on the sides of the head, and at the corners of its face so they show head-on too."""
+    if face in ('left', 'right') and y in (1, 2) and x in (1, 2, 3):
+        return '#fff0a0' if (y == 1 and x == 2) else '#ffb030' if y == 1 else '#ff6a10'
+    if face == 'front' and y in (1, 2) and x in (0, w - 1):
+        return '#fff0a0' if y == 1 else '#ff7a1c'
+    return None
+
+
+def _breast(box, face, x, y, w, h):
+    """A fissure of embers down the chest and the front of the neck, so the steed reads from straight ahead."""
+    if face != 'front':
+        return False
+    mid = (w - 1) / 2
+    if box.name == 'body':
+        return abs(x - mid) <= 0.5 + (1 if 2 <= y <= 5 else 0) and y <= 8 and (x + y) % 3 != 0
+    return abs(x - mid) <= 0.5 and y % 3 != 2
+
+
 def nightmare_painter(box, face, x, y, w, h):
-    rng = Rng(hash(('n', box.name, face, x, y)) & 0xFFFF)
+    rng = Rng(stable('n', box.name, face, x, y) & 0xFFFF)
     noise = rng.random()
 
     def hide(level=1):
@@ -335,16 +364,26 @@ def nightmare_painter(box, face, x, y, w, h):
             return '#2a0e06'
         return hide(1 if face in ('front', 'right') else 0)
     if box.name == 'head':
-        if face in ('left', 'right') and y == 1 and x in (2, 3):
-            return '#ffcf4a' if x == 2 else '#ff7a1c'
+        eye = _steed_eye(face, x, y, w)
+        if eye:
+            return eye
+        if face == 'front' and x in (2, 3) and y >= 2:
+            return '#c4500e'
         return hide(1)
     if box.name == 'mouth':
-        if face == 'front' and y >= 3:
-            return '#5a1a0a' if y == 3 else '#0b080d'
+        if face == 'front':
+            if y >= 3:
+                return '#5a1a0a' if y == 3 else '#0b080d'
+            if x in (1, 2):
+                return '#ff7a1c' if y == 0 else '#c4500e'
+        if face == 'top' and x in (1, 2):
+            return '#c4500e'
         return hide(1)
     if box.name == 'ear':
         return hide(0)
     if box.name in ('body', 'neck'):
+        if _breast(box, face, x, y, w, h):
+            return '#c4500e'
         if _crack(box, face, x, y) and face != 'bottom':
             return '#c4500e'
         if box.name == 'body' and face in ('left', 'right') and 3 <= y <= 7 and x % 4 == 1:
@@ -359,14 +398,23 @@ def nightmare_glow_painter(box, face, x, y, w, h):
         return mix('#ffe08a', '#802008', y / max(1, h - 1))
     if box.name == 'tail':
         return mix('#ffb040', '#401004', y / max(1, h - 1))
-    if box.name == 'head' and face in ('left', 'right') and y == 1 and x in (2, 3):
-        return '#ffcf4a'
+    if box.name == 'head':
+        eye = _steed_eye(face, x, y, w)
+        if eye:
+            return eye
+        if face == 'front' and x in (2, 3) and y >= 2:
+            return '#a03a0a'
     if box.name == 'leg' and y == h - 2:
         return '#ff7a1c'
+    if box.name in ('body', 'neck') and _breast(box, face, x, y, w, h):
+        return '#b8460c'
     if box.name in ('body', 'neck') and face != 'bottom' and _crack(box, face, x, y):
         return '#a03a0a'
-    if box.name == 'mouth' and face == 'front' and y == 3:
-        return '#601806'
+    if box.name == 'mouth':
+        if face == 'front' and y == 3:
+            return '#601806'
+        if face in ('front', 'top') and x in (1, 2) and y < 3:
+            return '#ff7a1c' if face == 'front' and y == 0 else '#a03a0a'
     return None
 
 
@@ -392,8 +440,9 @@ def radial(size, power, core=0.0):
             v = (1 - d) ** power
             if core and d < core:
                 v = 1.0
+            # premultiplied: alpha follows brightness, so the additive pipeline's alpha cutout drops the dark fringe
             g = int(255 * min(1.0, v))
-            put(img, x, y, (g, g, g, 255))
+            put(img, x, y, (g, g, g, g))
     return img
 
 
@@ -412,7 +461,7 @@ def flame_glow(size=32):
             if d >= 1:
                 continue
             g = int(255 * (1 - d) ** 1.4)
-            put(img, x, y, (g, g, g, 255))
+            put(img, x, y, (g, g, g, g))
     return img
 
 

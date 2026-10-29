@@ -141,7 +141,7 @@ public final class TrickOrTreat {
             level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 12, 0.3, 0.1, 0.3, 0.02);
         });
         if (c.trickSpook) tricks.add(() -> {
-            player.addEffect(new MobEffectInstance(ModContent.holder(ModContent.SPOOKED), 160, 0), villager);
+            player.addEffect(new MobEffectInstance(ModContent.holder(ModContent.SPOOKED), 160, 0, false, false, true), villager);
             Hallowed.platform().sendToPlayer(player, new FxPayload(FxPayload.Kind.SPOOK, 1));
             level.playSound(null, player.getX(), player.getY(), player.getZ(), ModContent.SPOOK.get(), SoundSource.NEUTRAL, 1.0f, 1.0f);
         });
