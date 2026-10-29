@@ -1,0 +1,372 @@
+# Upload Modrinth + CurseForge from prebuilt jars (releases/), a GitHub Release, or a Gradle build.
+# Prefer committing loader jars to releases/ so CI does not rebuild.
+#
+# Publish ONLY Minecraft 26.3:
+#   gh workflow run publish.yml -f version=1.0.0 -f minecraft_version=26.3
+#
+# All jars for a version:
+#   gh workflow run publish.yml -f version=1.0.0
+
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version (without v) matching jar names / GitHub Release
+        required: true
+      dry_run:
+        description: Skip uploads if true
+        required: false
+        default: "false"
+      curseforge_only:
+        description: Skip Modrinth (re-upload CurseForge only)
+        required: false
+        default: "false"
+      minecraft_version:
+        description: "Optional MC version filter (e.g. 26.3) — only upload matching jars"
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+
+      - name: Find prebuilt release jars
+        id: prebuilt
+        shell: bash
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          mkdir -p dist
+          mapfile -t JARS < <(find releases -maxdepth 1 -type f -name "hallowed-*-${VERSION}.jar" \
+            ! -name "*-sources.jar" ! -name "*-javadoc.jar" \
+            ! -name "*-dev.jar" ! -name "*-dev-shadow.jar" \
+            ! -name "*-common-*.jar" 2>/dev/null | sort)
+          if [ ${#JARS[@]} -gt 0 ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            cp -f "${JARS[@]}" dist/
+            printf 'Using prebuilt jars from releases/:\n'
+            printf '%s\n' "${JARS[@]}"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No releases/hallowed-*-${VERSION}.jar — will try GitHub Release then Gradle"
+          fi
+
+      - name: Download GitHub release jars
+        if: steps.prebuilt.outputs.found != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          if gh release view "v${VERSION}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release download "v${VERSION}" --repo "${{ github.repository }}" --dir dist --pattern 'hallowed-*.jar' || true
+          fi
+          count=$(find dist -name 'hallowed-*.jar' | wc -l)
+          echo "github_count=${count}" >> "$GITHUB_OUTPUT"
+          if [ "$count" -eq 0 ]; then
+            echo "No GitHub Release jars for v${VERSION}"
+          else
+            ls -la dist/
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.prebuilt.outputs.found != 'true'
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+            25
+
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.prebuilt.outputs.found != 'true'
+
+      - name: Build MultiLoader workspaces
+        if: steps.prebuilt.outputs.found != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(find dist -name 'hallowed-*.jar' | wc -l)" -gt 0 ]; then
+            echo "Skipping Gradle build; jars already in dist/"
+            exit 0
+          fi
+          MC_FILTER="${{ inputs.minecraft_version }}"
+          workspaces=()
+          if [ -n "$MC_FILTER" ]; then
+            workspaces=("$MC_FILTER")
+          else
+            workspaces=(1.20.1 1.21.1 26.1.2 26.2 26.3)
+          fi
+          built=0
+          for ws in "${workspaces[@]}"; do
+            if [ ! -f "$ws/gradlew" ] && [ ! -f "$ws/settings.gradle" ]; then
+              echo "Skipping missing workspace $ws"
+              continue
+            fi
+            echo "Building workspace $ws"
+            case "$ws" in
+              26.*) java_home="${JAVA_HOME_25_X64:-${JAVA_HOME_25_ARM64:-$JAVA_HOME}}" ;;
+              1.21.1) java_home="${JAVA_HOME_21_X64:-${JAVA_HOME_21_ARM64:-$JAVA_HOME}}" ;;
+              *) java_home="${JAVA_HOME_17_X64:-${JAVA_HOME_17_ARM64:-$JAVA_HOME}}" ;;
+            esac
+            (
+              export JAVA_HOME="$java_home"
+              export PATH="$JAVA_HOME/bin:$PATH"
+              cd "$ws"
+              chmod +x gradlew 2>/dev/null || true
+              ./gradlew build --no-daemon
+            )
+            built=1
+          done
+          if [ "$built" -eq 0 ]; then
+            echo "No Gradle workspace found to build" >&2
+            exit 1
+          fi
+
+      - name: Find release jars
+        id: jars
+        shell: bash
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          mapfile -t JARS < <(find dist -type f -name 'hallowed-*.jar' \
+            ! -name '*-sources.jar' ! -name '*-javadoc.jar' \
+            ! -name '*-dev.jar' ! -name '*-common-*.jar' 2>/dev/null | sort)
+          if [ ${#JARS[@]} -eq 0 ]; then
+            mapfile -t JARS < <(find releases -maxdepth 1 -type f -name "hallowed-*-${VERSION}.jar" \
+              ! -name "*-sources.jar" ! -name "*-javadoc.jar" \
+              ! -name "*-common-*.jar" 2>/dev/null | sort)
+          fi
+          if [ ${#JARS[@]} -eq 0 ]; then
+            mapfile -t JARS < <(find . -type f -path "*/build/libs/hallowed-*-${VERSION}.jar" \
+              ! -name "*-sources.jar" ! -name "*-javadoc.jar" \
+              ! -name "*-dev.jar" ! -name "*-dev-shadow.jar" \
+              ! -name "*-common-*.jar" | sort)
+          fi
+          if [ ${#JARS[@]} -eq 0 ]; then
+            echo "No hallowed jars found for version ${VERSION}" >&2
+            exit 1
+          fi
+          MC_FILTER="${{ inputs.minecraft_version }}"
+          if [ -n "$MC_FILTER" ]; then
+            FILTERED=()
+            for jar in "${JARS[@]}"; do
+              base=$(basename "$jar")
+              if echo "$base" | grep -qE "(^|-)${MC_FILTER}(-|$)"; then
+                FILTERED+=("$jar")
+              fi
+            done
+            if [ ${#FILTERED[@]} -eq 0 ]; then
+              echo "No jars matched minecraft_version filter ${MC_FILTER}" >&2
+              exit 1
+            fi
+            JARS=("${FILTERED[@]}")
+          fi
+          printf '%s\n' "${JARS[@]}"
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "list<<$EOF" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "${JARS[@]}" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Load release changelog
+        id: notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This version's own notes (patchnotes/<version>.md) first, then the GitHub Release body.
+          if [ -f "patchnotes/${VERSION}.md" ]; then
+            notes="$(cat "patchnotes/${VERSION}.md")"
+          else
+            notes="$(gh release view "v${VERSION}" --repo "${{ github.repository }}" --json body --jq .body 2>/dev/null || true)"
+          fi
+          if [ -z "${notes// }" ]; then
+            notes="## Hallowed ${VERSION}
+
+          See https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
+          fi
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "changelog<<$EOF" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$notes" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Upload Modrinth + CurseForge
+        if: ${{ inputs.dry_run != 'true' }}
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          MODRINTH_ID: ${{ vars.MODRINTH_ID }}
+          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
+          VERSION: ${{ steps.ver.outputs.version }}
+          JAR_LIST: ${{ steps.jars.outputs.list }}
+          CURSEFORGE_ONLY: ${{ inputs.curseforge_only }}
+          CHANGELOG: ${{ steps.notes.outputs.changelog }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${MODRINTH_ID:-}" && test -n "${CURSEFORGE_ID:-}"
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const version = process.env.VERSION;
+          const changelog = process.env.CHANGELOG || `## Hallowed ${version}\n\nSee GitHub release notes.`;
+          const curseforgeOnly = process.env.CURSEFORGE_ONLY === 'true';
+          const jars = process.env.JAR_LIST.split(/\n/).map(s => s.trim()).filter(Boolean);
+
+          function parseJar(jar) {
+            const n = path.basename(jar);
+            let loader = 'fabric';
+            if (/neoforge/i.test(n)) loader = 'neoforge';
+            else if (/forge/i.test(n)) loader = 'forge';
+            else if (/fabric/i.test(n)) loader = 'fabric';
+            const m = n.match(/^hallowed-(?:fabric|forge|neoforge)-(.+)-(\d+\.\d+\.\d+(?:-[A-Za-z0-9.]+)?)\.jar$/i);
+            const game = m ? m[1] : null;
+            return { jar, name: n, loader, game };
+          }
+
+          const parsed = jars.map(parseJar);
+          for (const p of parsed) {
+            if (!p.game) throw new Error('Cannot parse MC version from ' + p.name);
+          }
+
+          (async () => {
+            if (!curseforgeOnly) {
+              for (const p of parsed) {
+                const body = {
+                  name: `Hallowed ${version}`,
+                  version_number: version,
+                  changelog,
+                  dependencies: [],
+                  game_versions: [p.game],
+                  version_type: 'release',
+                  loaders: [p.loader],
+                  featured: false,
+                  status: 'listed',
+                  project_id: process.env.MODRINTH_ID,
+                  file_parts: ['file_0'],
+                  primary_file: 'file_0',
+                };
+                const form = new FormData();
+                form.append('data', JSON.stringify(body));
+                form.append('file_0', new Blob([fs.readFileSync(p.jar)]), p.name);
+                const mrRes = await fetch('https://api.modrinth.com/v2/version', {
+                  method: 'POST',
+                  headers: { Authorization: process.env.MODRINTH_TOKEN },
+                  body: form,
+                });
+                const mrText = await mrRes.text();
+                if (!mrRes.ok) throw new Error('Modrinth ' + mrRes.status + ' ' + p.name + ' ' + mrText.slice(0, 500));
+                console.log('Modrinth OK', p.name);
+              }
+            } else {
+              console.log('Skipping Modrinth (curseforge_only=true)');
+            }
+
+            const LOADER_IDS = { fabric: 7499, forge: 7498, neoforge: 10150 };
+            const legacyRes = await fetch('https://minecraft.curseforge.com/api/game/versions', {
+              headers: { 'X-Api-Token': process.env.CURSEFORGE_TOKEN },
+            });
+            if (!legacyRes.ok) throw new Error('CurseForge legacy versions API ' + legacyRes.status);
+            const legacyFlat = await legacyRes.json();
+            const findLegacy = (want, preferType) => {
+              const hits = legacyFlat.filter((v) => v.name === want);
+              if (preferType != null) {
+                const hit = hits.find((v) => v.gameVersionTypeID === preferType);
+                if (!hit) throw new Error(`No CF legacy version for ${want} (type ${preferType})`);
+                return hit.id;
+              }
+              if (!hits[0]) throw new Error('No CF legacy version for ' + want);
+              return hits[0].id;
+            };
+            const clientId = findLegacy('Client');
+            const serverId = findLegacy('Server');
+            const resolveGameId = async (game) => {
+              const verRes = await fetch(
+                `https://api.curseforge.com/v1/minecraft/version/${encodeURIComponent(game)}`,
+                { headers: { 'x-api-key': process.env.CURSEFORGE_API_KEY, Accept: 'application/json' } },
+              );
+              if (verRes.ok) {
+                const verJson = await verRes.json();
+                const gvId = verJson.data?.gameVersionId;
+                if (gvId) {
+                  console.log('CF game', game, '-> gameVersionId', gvId);
+                  return gvId;
+                }
+              }
+              const typesRes = await fetch('https://api.curseforge.com/v1/games/432/version-types', {
+                headers: { 'x-api-key': process.env.CURSEFORGE_API_KEY, Accept: 'application/json' },
+              });
+              const typeIds = [];
+              if (typesRes.ok) {
+                const typesJson = await typesRes.json();
+                for (const t of typesJson.data || []) {
+                  if (/minecraft/i.test(t.name) && !/bukkit|spigot|paper|plugin/i.test(t.name)) {
+                    typeIds.push(t.id);
+                  }
+                }
+              }
+              typeIds.push(77784, 1);
+              const slug = game.replace(/\./g, '-');
+              const candidates = legacyFlat.filter((v) => v.name === game || v.slug === slug);
+              for (const typeId of typeIds) {
+                const hit = candidates.find((v) => v.gameVersionTypeID === typeId);
+                if (hit) {
+                  console.log('CF game', game, '-> legacy id', hit.id, 'type', hit.gameVersionTypeID);
+                  return hit.id;
+                }
+              }
+              throw new Error('No CF game version id for ' + game);
+            };
+
+            for (const p of parsed) {
+              const gameId = await resolveGameId(p.game);
+              const loaderId = LOADER_IDS[p.loader];
+              if (!loaderId) throw new Error('Unknown loader for ' + p.name);
+              const meta = {
+                changelog,
+                changelogType: 'markdown',
+                displayName: p.name,
+                gameVersions: [clientId, serverId, loaderId, gameId],
+                releaseType: 'release',
+              };
+              const cfForm = new FormData();
+              cfForm.append('metadata', JSON.stringify(meta));
+              cfForm.append('file', new Blob([fs.readFileSync(p.jar)]), p.name);
+              let cfText = '';
+              for (let attempt = 1; attempt <= 4; attempt++) {
+                const cfRes = await fetch(
+                  `https://minecraft.curseforge.com/api/projects/${process.env.CURSEFORGE_ID}/upload-file`,
+                  { method: 'POST', headers: { 'X-Api-Token': process.env.CURSEFORGE_TOKEN }, body: cfForm },
+                );
+                cfText = await cfRes.text();
+                if (cfRes.ok) {
+                  console.log('CurseForge OK', p.name, cfText.slice(0, 120));
+                  break;
+                }
+                if ((cfRes.status === 503 || cfRes.status === 429) && attempt < 4) {
+                  console.warn('CurseForge', cfRes.status, 'for', p.name, '- retry', attempt);
+                  await new Promise((r) => setTimeout(r, 15000 * attempt));
+                  continue;
+                }
+                throw new Error('CurseForge ' + cfRes.status + ' ' + p.name + ' ' + cfText.slice(0, 500));
+              }
+            }
+          })().catch((e) => { console.error(e); process.exit(1); });
+          NODE
