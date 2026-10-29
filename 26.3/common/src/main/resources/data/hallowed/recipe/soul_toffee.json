@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "hallowed:ectoplasm",
+    "minecraft:sugar",
+    "minecraft:honey_bottle",
+    "minecraft:soul_sand"
+  ],
+  "result": {
+    "id": "hallowed:soul_toffee",
+    "count": 2
+  }
+}

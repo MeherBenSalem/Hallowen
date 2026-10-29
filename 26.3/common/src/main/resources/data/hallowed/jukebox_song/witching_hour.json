@@ -1,0 +1,8 @@
+{
+  "comparator_output": 13,
+  "description": {
+    "translate": "jukebox_song.hallowed.witching_hour"
+  },
+  "length_in_seconds": 132.0,
+  "sound_event": "hallowed:music_disc.witching_hour"
+}

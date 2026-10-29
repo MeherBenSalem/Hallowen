@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hallowed:soul_jack_o_lantern",
+          "modifier": [
+            {
+              "type": "minecraft:copy_state",
+              "block": "hallowed:soul_jack_o_lantern",
+              "properties": [
+                "face"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hallowed:blocks/soul_jack_o_lantern"
+}

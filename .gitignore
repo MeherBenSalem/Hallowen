@@ -1,0 +1,36 @@
+# Build / Gradle
+.gradle/
+**/build/
+/build/
+bin/
+
+# Runs / IDE
+run/
+runs/
+.idea/
+.vscode/
+.eclipse/
+.settings/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+
+# Release / secrets / generated
+dist/
+graphify-out/
+.env
+.env.*
+secrets/
+*.log
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Generated asset cache and Python bytecode
+tools/assets/.cache/
+__pycache__/
+logs/

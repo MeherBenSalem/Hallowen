@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:sugar",
+    "minecraft:wheat",
+    "minecraft:orange_dye"
+  ],
+  "result": {
+    "id": "hallowed:candy_corn",
+    "count": 4
+  }
+}

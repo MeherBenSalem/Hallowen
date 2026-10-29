@@ -1,0 +1,12 @@
+{
+  "values": [
+    "minecraft:carved_pumpkin",
+    "minecraft:jack_o_lantern",
+    "#minecraft:skulls",
+    "hallowed:carved_pumpkin",
+    "hallowed:jack_o_lantern",
+    "hallowed:soul_jack_o_lantern",
+    "hallowed:witch_hat",
+    "hallowed:horseman_head"
+  ]
+}

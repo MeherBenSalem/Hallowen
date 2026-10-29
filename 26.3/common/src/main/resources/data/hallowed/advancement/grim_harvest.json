@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "hallowed:reaper_scythe"
+    },
+    "title": {
+      "translate": "advancements.hallowed.grim_harvest.title"
+    },
+    "description": {
+      "translate": "advancements.hallowed.grim_harvest.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ],
+  "parent": "hallowed:headless_no_more"
+}

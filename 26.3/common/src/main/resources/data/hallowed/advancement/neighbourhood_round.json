@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "hallowed:caramel_apple"
+    },
+    "title": {
+      "translate": "advancements.hallowed.neighbourhood_round.title"
+    },
+    "description": {
+      "translate": "advancements.hallowed.neighbourhood_round.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ],
+  "parent": "hallowed:dressed_for_the_occasion"
+}

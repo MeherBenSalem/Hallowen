@@ -1,0 +1,96 @@
+{
+  "display": {
+    "icon": {
+      "id": "hallowed:candy_corn"
+    },
+    "title": {
+      "translate": "advancements.hallowed.root.title"
+    },
+    "description": {
+      "translate": "advancements.hallowed.root.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "hallowed:gui/advancements/backgrounds/hallowed"
+  },
+  "criteria": {
+    "eat_candy_corn": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:candy_corn"
+        }
+      }
+    },
+    "eat_caramel_apple": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:caramel_apple"
+        }
+      }
+    },
+    "eat_ghost_gummy": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:ghost_gummy"
+        }
+      }
+    },
+    "eat_pumpkin_truffle": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:pumpkin_truffle"
+        }
+      }
+    },
+    "eat_witch_lollipop": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:witch_lollipop"
+        }
+      }
+    },
+    "eat_bat_wing_licorice": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:bat_wing_licorice"
+        }
+      }
+    },
+    "eat_eyeball_jawbreaker": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:eyeball_jawbreaker"
+        }
+      }
+    },
+    "eat_soul_toffee": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "hallowed:soul_toffee"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "eat_candy_corn",
+      "eat_caramel_apple",
+      "eat_ghost_gummy",
+      "eat_pumpkin_truffle",
+      "eat_witch_lollipop",
+      "eat_bat_wing_licorice",
+      "eat_eyeball_jawbreaker",
+      "eat_soul_toffee"
+    ]
+  ]
+}

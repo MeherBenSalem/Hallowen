@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "cursed=false,facing=north": {
+      "model": "hallowed:block/hallowed_cache"
+    },
+    "cursed=false,facing=east": {
+      "model": "hallowed:block/hallowed_cache",
+      "y": 90
+    },
+    "cursed=false,facing=south": {
+      "model": "hallowed:block/hallowed_cache",
+      "y": 180
+    },
+    "cursed=false,facing=west": {
+      "model": "hallowed:block/hallowed_cache",
+      "y": 270
+    },
+    "cursed=true,facing=north": {
+      "model": "hallowed:block/hallowed_cache_cursed"
+    },
+    "cursed=true,facing=east": {
+      "model": "hallowed:block/hallowed_cache_cursed",
+      "y": 90
+    },
+    "cursed=true,facing=south": {
+      "model": "hallowed:block/hallowed_cache_cursed",
+      "y": 180
+    },
+    "cursed=true,facing=west": {
+      "model": "hallowed:block/hallowed_cache_cursed",
+      "y": 270
+    }
+  }
+}

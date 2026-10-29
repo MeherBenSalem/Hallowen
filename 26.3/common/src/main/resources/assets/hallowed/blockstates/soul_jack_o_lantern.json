@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "face=0,facing=north": {
+      "model": "hallowed:block/soul_classic"
+    },
+    "face=0,facing=east": {
+      "model": "hallowed:block/soul_classic",
+      "y": 90
+    },
+    "face=0,facing=south": {
+      "model": "hallowed:block/soul_classic",
+      "y": 180
+    },
+    "face=0,facing=west": {
+      "model": "hallowed:block/soul_classic",
+      "y": 270
+    },
+    "face=1,facing=north": {
+      "model": "hallowed:block/soul_grin"
+    },
+    "face=1,facing=east": {
+      "model": "hallowed:block/soul_grin",
+      "y": 90
+    },
+    "face=1,facing=south": {
+      "model": "hallowed:block/soul_grin",
+      "y": 180
+    },
+    "face=1,facing=west": {
+      "model": "hallowed:block/soul_grin",
+      "y": 270
+    },
+    "face=2,facing=north": {
+      "model": "hallowed:block/soul_fangs"
+    },
+    "face=2,facing=east": {
+      "model": "hallowed:block/soul_fangs",
+      "y": 90
+    },
+    "face=2,facing=south": {
+      "model": "hallowed:block/soul_fangs",
+      "y": 180
+    },
+    "face=2,facing=west": {
+      "model": "hallowed:block/soul_fangs",
+      "y": 270
+    },
+    "face=3,facing=north": {
+      "model": "hallowed:block/soul_cat"
+    },
+    "face=3,facing=east": {
+      "model": "hallowed:block/soul_cat",
+      "y": 90
+    },
+    "face=3,facing=south": {
+      "model": "hallowed:block/soul_cat",
+      "y": 180
+    },
+    "face=3,facing=west": {
+      "model": "hallowed:block/soul_cat",
+      "y": 270
+    },
+    "face=4,facing=north": {
+      "model": "hallowed:block/soul_scream"
+    },
+    "face=4,facing=east": {
+      "model": "hallowed:block/soul_scream",
+      "y": 90
+    },
+    "face=4,facing=south": {
+      "model": "hallowed:block/soul_scream",
+      "y": 180
+    },
+    "face=4,facing=west": {
+      "model": "hallowed:block/soul_scream",
+      "y": 270
+    },
+    "face=5,facing=north": {
+      "model": "hallowed:block/soul_wink"
+    },
+    "face=5,facing=east": {
+      "model": "hallowed:block/soul_wink",
+      "y": 90
+    },
+    "face=5,facing=south": {
+      "model": "hallowed:block/soul_wink",
+      "y": 180
+    },
+    "face=5,facing=west": {
+      "model": "hallowed:block/soul_wink",
+      "y": 270
+    },
+    "face=6,facing=north": {
+      "model": "hallowed:block/soul_skull"
+    },
+    "face=6,facing=east": {
+      "model": "hallowed:block/soul_skull",
+      "y": 90
+    },
+    "face=6,facing=south": {
+      "model": "hallowed:block/soul_skull",
+      "y": 180
+    },
+    "face=6,facing=west": {
+      "model": "hallowed:block/soul_skull",
+      "y": 270
+    },
+    "face=7,facing=north": {
+      "model": "hallowed:block/soul_bat"
+    },
+    "face=7,facing=east": {
+      "model": "hallowed:block/soul_bat",
+      "y": 90
+    },
+    "face=7,facing=south": {
+      "model": "hallowed:block/soul_bat",
+      "y": 180
+    },
+    "face=7,facing=west": {
+      "model": "hallowed:block/soul_bat",
+      "y": 270
+    }
+  }
+}

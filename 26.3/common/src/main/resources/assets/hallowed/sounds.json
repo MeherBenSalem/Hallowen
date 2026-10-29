@@ -1,0 +1,330 @@
+{
+  "event.witching_bell": {
+    "sounds": [
+      {
+        "name": "hallowed:witching_bell",
+        "attenuation_distance": 64
+      }
+    ],
+    "subtitle": "subtitles.hallowed.event.witching_bell"
+  },
+  "ambient.whispers": {
+    "sounds": [
+      {
+        "name": "hallowed:whispers1",
+        "volume": 0.5
+      },
+      {
+        "name": "hallowed:whispers2",
+        "volume": 0.5
+      },
+      {
+        "name": "hallowed:whispers3",
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.hallowed.ambient.whispers"
+  },
+  "ambient.owl": {
+    "sounds": [
+      {
+        "name": "hallowed:owl1",
+        "volume": 0.45
+      },
+      {
+        "name": "hallowed:owl2",
+        "volume": 0.45
+      }
+    ],
+    "subtitle": "subtitles.hallowed.ambient.owl"
+  },
+  "ambient.chimes": {
+    "sounds": [
+      {
+        "name": "hallowed:chimes1",
+        "volume": 0.4
+      },
+      {
+        "name": "hallowed:chimes2",
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.hallowed.ambient.chimes"
+  },
+  "ambient.wind": {
+    "sounds": [
+      {
+        "name": "hallowed:wind1",
+        "volume": 0.5
+      },
+      {
+        "name": "hallowed:wind2",
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.hallowed.ambient.wind"
+  },
+  "entity.wisp.ambient": {
+    "sounds": [
+      {
+        "name": "hallowed:wisp_ambient1"
+      },
+      {
+        "name": "hallowed:wisp_ambient2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.wisp.ambient"
+  },
+  "entity.wisp.chime": {
+    "sounds": [
+      {
+        "name": "hallowed:wisp_chime"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.wisp.chime"
+  },
+  "entity.wisp.vanish": {
+    "sounds": [
+      {
+        "name": "hallowed:wisp_vanish"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.wisp.vanish"
+  },
+  "block.hallowed_cache.open": {
+    "sounds": [
+      {
+        "name": "hallowed:cache_open"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.block.hallowed_cache.open"
+  },
+  "item.candy.eat": {
+    "sounds": [
+      {
+        "name": "hallowed:candy_eat1"
+      },
+      {
+        "name": "hallowed:candy_eat2"
+      },
+      {
+        "name": "hallowed:candy_eat3"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.item.candy.eat"
+  },
+  "event.treat": {
+    "sounds": [
+      {
+        "name": "hallowed:treat"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.event.treat"
+  },
+  "event.trick": {
+    "sounds": [
+      {
+        "name": "hallowed:trick"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.event.trick"
+  },
+  "block.pumpkin.carve": {
+    "sounds": [
+      {
+        "name": "minecraft:block/pumpkin/carve1"
+      },
+      {
+        "name": "minecraft:block/pumpkin/carve2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.block.pumpkin.carve"
+  },
+  "entity.spirit.ambient": {
+    "sounds": [
+      {
+        "name": "hallowed:spirit_ambient1"
+      },
+      {
+        "name": "hallowed:spirit_ambient2"
+      },
+      {
+        "name": "hallowed:spirit_ambient3"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.spirit.ambient"
+  },
+  "entity.spirit.hurt": {
+    "sounds": [
+      {
+        "name": "hallowed:spirit_hurt1"
+      },
+      {
+        "name": "hallowed:spirit_hurt2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.spirit.hurt"
+  },
+  "entity.spirit.death": {
+    "sounds": [
+      {
+        "name": "hallowed:spirit_death"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.spirit.death"
+  },
+  "entity.spirit.charge": {
+    "sounds": [
+      {
+        "name": "hallowed:spirit_charge1"
+      },
+      {
+        "name": "hallowed:spirit_charge2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.spirit.charge"
+  },
+  "entity.hollow_horseman.laugh": {
+    "sounds": [
+      {
+        "name": "minecraft:entity/witch/celebrate",
+        "pitch": 0.55
+      },
+      {
+        "name": "minecraft:entity/witch/celebrate",
+        "pitch": 0.62
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.laugh"
+  },
+  "entity.hollow_horseman.summon": {
+    "sounds": [
+      {
+        "name": "hallowed:horseman_summon",
+        "attenuation_distance": 64
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.summon"
+  },
+  "entity.hollow_horseman.charge": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/horse/angry1",
+        "pitch": 0.72
+      },
+      {
+        "name": "minecraft:mob/horse/skeleton/death",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.charge"
+  },
+  "entity.hollow_horseman.hurt": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/wither_skeleton/hurt1",
+        "pitch": 0.65
+      },
+      {
+        "name": "minecraft:mob/wither_skeleton/hurt2",
+        "pitch": 0.65
+      },
+      {
+        "name": "minecraft:mob/wither_skeleton/hurt3",
+        "pitch": 0.65
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.hurt"
+  },
+  "entity.hollow_horseman.death": {
+    "sounds": [
+      {
+        "name": "hallowed:horseman_death",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.death"
+  },
+  "entity.hollow_horseman.dismount": {
+    "sounds": [
+      {
+        "name": "minecraft:mob/horse/skeleton/death",
+        "pitch": 0.75
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.dismount"
+  },
+  "entity.hollow_horseman.swing": {
+    "sounds": [
+      {
+        "name": "hallowed:swing1"
+      },
+      {
+        "name": "hallowed:swing2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.hollow_horseman.swing"
+  },
+  "entity.pumpkin_bomb.throw": {
+    "sounds": [
+      {
+        "name": "hallowed:bomb_throw1"
+      },
+      {
+        "name": "hallowed:bomb_throw2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.pumpkin_bomb.throw"
+  },
+  "entity.pumpkin_bomb.explode": {
+    "sounds": [
+      {
+        "name": "hallowed:bomb_explode1"
+      },
+      {
+        "name": "hallowed:bomb_explode2"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.entity.pumpkin_bomb.explode"
+  },
+  "item.reaper_scythe.reap": {
+    "sounds": [
+      {
+        "name": "hallowed:reap"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.item.reaper_scythe.reap"
+  },
+  "event.spook": {
+    "sounds": [
+      {
+        "name": "hallowed:spook"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.event.spook"
+  },
+  "effect.spooked.heartbeat": {
+    "sounds": [
+      {
+        "name": "hallowed:heartbeat"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.effect.spooked.heartbeat"
+  },
+  "block.cursed_pumpkin.pulse": {
+    "sounds": [
+      {
+        "name": "hallowed:cursed_pulse"
+      }
+    ],
+    "subtitle": "subtitles.hallowed.block.cursed_pumpkin.pulse"
+  },
+  "music_disc.witching_hour": {
+    "sounds": [
+      {
+        "name": "hallowed:music/witching_hour",
+        "stream": true
+      }
+    ]
+  }
+}

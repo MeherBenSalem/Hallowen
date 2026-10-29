@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "hallowed:horseman_head"
+    },
+    "title": {
+      "translate": "advancements.hallowed.headless_no_more.title"
+    },
+    "description": {
+      "translate": "advancements.hallowed.headless_no_more.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ],
+  "parent": "hallowed:cursed_pumpkin"
+}

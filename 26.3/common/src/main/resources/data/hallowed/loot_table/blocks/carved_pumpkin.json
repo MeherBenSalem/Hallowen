@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hallowed:carved_pumpkin",
+          "modifier": [
+            {
+              "type": "minecraft:copy_state",
+              "block": "hallowed:carved_pumpkin",
+              "properties": [
+                "face"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "hallowed:blocks/carved_pumpkin"
+}
