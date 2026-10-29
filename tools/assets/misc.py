@@ -316,60 +316,163 @@ def adv_background():
 # Logo and icon: a grinning jack o'lantern under a swollen harvest moon, a bat crossing it.
 
 
-def logo(size=128):
-    s = 4
-    W = size * s
+# ---------------------------------------------------------------------------------------------------------------------
+# Mod icon: the Horseman's Head (the real block textures, drawn as an inventory-style isometric block with its flame)
+# in front of a pixel-art Harvest Moon on a Hallowed Night sky. Built on a 64x64 pixel grid and enlarged without
+# smoothing, so it reads as pixel art at every size.
+
+BAYER4 = ((0, 8, 2, 10), (12, 4, 14, 6), (3, 11, 1, 9), (15, 7, 13, 5))
+
+
+def _logo_sky(n=64):
+    """The backdrop at n x n: dithered violet sky, the moon with its halo, stars, bats and a churchyard horizon."""
+    img = Image.new('RGBA', (n, n))
+    px = img.load()
+    bands = [rgb(c) for c in ('#0d0716', '#160b24', '#211031', '#2e143c', '#3d1a43', '#552443')]
+    for y in range(n):
+        t = y / (n - 1) * (len(bands) - 1)
+        for x in range(n):
+            i = min(len(bands) - 2, int(t))
+            f = t - i
+            px[x, y] = bands[i + (1 if f * 16 > BAYER4[y % 4][x % 4] else 0)]
+    cx, cy, r = 22, 21, 15
+    for y in range(n):
+        for x in range(n):
+            d = math.hypot(x - cx + 0.5, y - cy + 0.5)
+            if r < d <= r + 1.6:
+                px[x, y] = rgb('#9a3a30')
+            elif r + 1.6 < d <= r + 3.8 and (x + y) % 2 == 0:
+                px[x, y] = rgb('#5e2238')
+    moon = {'rim': '#ffcf7a', 'body': '#ffb54d', 'shade': '#f08d2c', 'deep': '#d06a1c'}
+    for y in range(n):
+        for x in range(n):
+            dx, dy = x - cx + 0.5, y - cy + 0.5
+            d = math.hypot(dx, dy)
+            if d > r:
+                continue
+            # light from the upper left; the lower right edge falls into shade
+            lit = (-dx - dy) / (r * 1.4)
+            c = moon['body']
+            if d > r - 1.2 and lit > 0:
+                c = moon['rim']
+            elif lit < -0.45:
+                c = moon['shade'] if (lit > -0.62 or (x + y) % 2) else moon['deep']
+            px[x, y] = rgb(c)
+    for (mx, my, mr) in ((16, 15, 2.8), (27, 26, 2.4), (28, 13, 1.6), (17, 27, 1.5)):
+        for y in range(n):
+            for x in range(n):
+                if math.hypot(x - mx + 0.5, y - my + 0.5) <= mr and math.hypot(x - cx + 0.5, y - cy + 0.5) <= r - 1:
+                    px[x, y] = rgb('#e7953a')
+    for (x, y) in ((44, 6), (52, 3), (58, 9), (61, 21), (40, 15), (49, 26), (3, 41), (59, 34), (4, 4), (36, 2)):
+        px[x, y] = rgb('#ffe6c2')
+    for (x, y) in ((50, 15), (6, 33)):
+        for ox, oy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+            px[x + ox, y + oy] = rgb('#fff3dc' if (ox, oy) == (0, 0) else '#a98bb8')
+    bat = ['X.......X', 'XX.X.X.XX', '.XXXXXXX.', '..X...X..']
+    for bx, by in ((56, 25), (42, 8)):
+        for j, row in enumerate(bat):
+            for i, ch in enumerate(row):
+                if ch == 'X':
+                    px[bx + i - 4, by + j] = rgb('#120818')
+    # a low hill with two leaning gravestones and a crooked fence along the bottom
+    for x in range(n):
+        h = 54 + round(2.2 * math.sin(x * 0.11 + 0.6) + 1.2 * math.sin(x * 0.29))
+        for y in range(h, n):
+            px[x, y] = rgb('#0b0510' if y > h else '#1b0d22')
+    for gx, gy, w, hgt in ((6, 46, 5, 8), (54, 47, 4, 7)):
+        for y in range(gy, gy + hgt):
+            for x in range(gx, gx + w):
+                top = y == gy and x in (gx, gx + w - 1)
+                if not top:
+                    px[x, y] = rgb('#2b1d33' if x == gx else '#1d1225')
+    return img
+
+
+def _iso_face(dst, tex, origin, u, v, shade=1.0, keep_bright=False):
+    """Draws a 16x16 texture onto the parallelogram origin + s*u + t*v (s, t in 0..1) with nearest sampling."""
+    tex = tex.convert('RGBA')
+    ux, uy = u
+    vx, vy = v
+    det = ux * vy - uy * vx
+    w, h = dst.size
+    out = dst.load()
+    src = tex.load()
+    xs = [origin[0], origin[0] + ux, origin[0] + vx, origin[0] + ux + vx]
+    ys = [origin[1], origin[1] + uy, origin[1] + vy, origin[1] + uy + vy]
+    for y in range(max(0, int(min(ys))), min(h, int(max(ys)) + 1)):
+        for x in range(max(0, int(min(xs))), min(w, int(max(xs)) + 1)):
+            px, py = x + 0.5 - origin[0], y + 0.5 - origin[1]
+            s = (px * vy - py * vx) / det
+            t = (ux * py - uy * px) / det
+            if not (0 <= s < 1 and 0 <= t < 1):
+                continue
+            c = src[int(s * 16), int(t * 16)]
+            if c[3] < 128:
+                continue
+            k = shade
+            if keep_bright and (c[0] + c[1]) > 330:
+                k = 1.0
+            out[x, y] = (int(c[0] * k), int(c[1] * k), int(c[2] * k), 255)
+
+
+def _logo_head(scale, frame=5):
+    """The Horseman's Head as an inventory block on a 256 canvas, texel steps (2, 1) * scale across, 2.5 * scale up."""
+    from blocks import BLOCKS, head_flame
+    side, top, face = BLOCKS['horseman_head_side'](), BLOCKS['horseman_head_top'](), BLOCKS['horseman_head_face']()
+    flame = head_flame().crop((0, frame * 16, 16, frame * 16 + 16))
+    W = 256
     img = Image.new('RGBA', (W, W), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    # rounded night badge
-    d.rounded_rectangle((0, 0, W - 1, W - 1), radius=W * 0.18, fill=(20, 12, 30, 255))
-    # sky gradient
-    sky = Image.new('RGBA', (W, W))
-    sp = sky.load()
-    for y in range(W):
-        t = y / W
-        c = mix('#2a1440', '#0c0714', t)
-        for x in range(W):
-            sp[x, y] = c
-    mask = Image.new('L', (W, W), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, W - 1, W - 1), radius=W * 0.18, fill=255)
-    img.paste(sky, (0, 0), mask)
-    d = ImageDraw.Draw(img)
-    # harvest moon with a glow
-    glow = Image.new('RGBA', (W, W), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(glow)
-    gd.ellipse((W * 0.18, W * 0.02, W * 0.86, W * 0.70), fill=(255, 150, 50, 120))
-    glow = glow.filter(ImageFilter.GaussianBlur(W * 0.06))
-    img.alpha_composite(Image.composite(glow, Image.new('RGBA', (W, W), (0, 0, 0, 0)), mask))
-    d.ellipse((W * 0.27, W * 0.09, W * 0.77, W * 0.59), fill=(255, 176, 77, 255))
-    d.ellipse((W * 0.36, W * 0.18, W * 0.46, W * 0.26), fill=(240, 150, 60, 255))
-    d.ellipse((W * 0.58, W * 0.34, W * 0.66, W * 0.41), fill=(240, 150, 60, 255))
-    # bat across the moon
-    bx, by, bs = W * 0.56, W * 0.22, W * 0.11
-    bat = [(bx - bs * 1.6, by), (bx - bs * 1.0, by - bs * 0.35), (bx - bs * 0.55, by - bs * 0.05), (bx - bs * 0.2, by - bs * 0.45),
-           (bx, by - bs * 0.15), (bx + bs * 0.2, by - bs * 0.45), (bx + bs * 0.55, by - bs * 0.05), (bx + bs * 1.0, by - bs * 0.35),
-           (bx + bs * 1.6, by), (bx + bs * 1.0, by + bs * 0.05), (bx + bs * 0.55, by + bs * 0.4), (bx, by + bs * 0.2),
-           (bx - bs * 0.55, by + bs * 0.4), (bx - bs * 1.0, by + bs * 0.05)]
-    d.polygon(bat, fill=(26, 14, 36, 255))
-    # jack o'lantern
-    cx, cy = W * 0.5, W * 0.72
-    rx, ry = W * 0.36, W * 0.24
-    for i, (ox, sc, col) in enumerate(((-0.55, 0.62, (196, 92, 22)), (0.55, 0.62, (196, 92, 22)), (-0.25, 0.82, (226, 116, 30)),
-                                        (0.25, 0.82, (226, 116, 30)), (0, 0.9, (240, 132, 38)))):
-        d.ellipse((cx + ox * rx - rx * sc * 0.55, cy - ry, cx + ox * rx + rx * sc * 0.55, cy + ry), fill=col)
-    d.rounded_rectangle((cx - W * 0.03, cy - ry - W * 0.07, cx + W * 0.03, cy - ry + W * 0.02), radius=W * 0.01, fill=(60, 96, 34))
-    glowc = (255, 226, 110, 255)
-    d.polygon([(cx - W * 0.2, cy - W * 0.03), (cx - W * 0.12, cy - W * 0.13), (cx - W * 0.05, cy - W * 0.03)], fill=glowc)
-    d.polygon([(cx + W * 0.2, cy - W * 0.03), (cx + W * 0.12, cy - W * 0.13), (cx + W * 0.05, cy - W * 0.03)], fill=glowc)
-    mouth = [(cx - W * 0.24, cy + W * 0.03), (cx - W * 0.16, cy + W * 0.06), (cx - W * 0.13, cy + W * 0.02), (cx - W * 0.08, cy + W * 0.07),
-             (cx - W * 0.03, cy + W * 0.03), (cx + W * 0.03, cy + W * 0.07), (cx + W * 0.08, cy + W * 0.03), (cx + W * 0.13, cy + W * 0.07),
-             (cx + W * 0.16, cy + W * 0.03), (cx + W * 0.24, cy + W * 0.03), (cx + W * 0.16, cy + W * 0.15), (cx, cy + W * 0.18),
-             (cx - W * 0.16, cy + W * 0.15)]
-    d.polygon(mouth, fill=glowc)
-    # rim
-    ImageDraw.Draw(img).rounded_rectangle((W * 0.01, W * 0.01, W * 0.99, W * 0.99), radius=W * 0.18, outline=(238, 138, 44, 255),
-                                          width=int(W * 0.025))
-    return img.resize((size, size), Image.LANCZOS)
+    ax, ay, up = 2 * scale * 16, 1 * scale * 16, int(2.5 * scale * 16)
+    bx, by = W // 2 + 12, W - 24
+    _iso_face(img, face, (bx - ax, by - ay - up), (ax, ay), (0, up), shade=0.86, keep_bright=True)
+    _iso_face(img, side, (bx, by - up), (ax, -ay), (0, up), shade=0.6)
+    _iso_face(img, top, (bx - ax, by - up - ay), (ax, -ay), (ax, ay), shade=1.0)
+    # The flame is a pair of crossed planes through the middle of the head (model y 12..26); in this view one faces
+    # the camera, so it draws as a billboard. Only what rises above the top face shows.
+    fw, fh = 7 * 16 * scale // 2, 5 * 16 * scale // 2
+    fl = flame.resize((fw, fh), Image.NEAREST)
+    centre = by - up - ay
+    base = centre + 4 * 5 * scale // 2
+    visible = fl.crop((0, 0, fw, fh - (base - centre)))
+    img.alpha_composite(visible, (bx - fw // 2, base - fh))
+    return img
+
+
+def _logo_glow(n=64):
+    """Ember light the head throws on the hill under it, as dithered pixels."""
+    img = Image.new('RGBA', (n, n), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(52, n):
+        for x in range(n):
+            d = math.hypot((x - 35) / 1.7, (y - 58) / 0.8)
+            if d < 7:
+                px[x, y] = rgb('#6e2616')
+            elif d < 11 and (x + y) % 2 == 0:
+                px[x, y] = rgb('#4a1a18')
+    return img
+
+
+def logo(size=128):
+    """The mod icon: 256 is native (4 screen pixels per sky pixel); other sizes are resampled from it."""
+    sky = _logo_sky()
+    sky.alpha_composite(_logo_glow())
+    big = sky.resize((256, 256), Image.NEAREST)
+    big.alpha_composite(_logo_head(2))
+    # a two-pixel frame: dark outside, ember inside, with clipped corners
+    px = big.load()
+    for y in range(256):
+        for x in range(256):
+            e = min(x, y, 255 - x, 255 - y)
+            corner = min(x, 255 - x) + min(y, 255 - y)
+            if corner < 12:
+                px[x, y] = (0, 0, 0, 0)
+            elif e < 4 or corner < 16:
+                px[x, y] = rgb('#120818')
+            elif e < 8 or corner < 20:
+                px[x, y] = rgb('#c4501a')
+    if size == 256:
+        return big
+    return big.resize((size, size), Image.NEAREST if size % 256 == 0 or 256 % size == 0 and size >= 256 else Image.LANCZOS)
 
 
 GUI = {
