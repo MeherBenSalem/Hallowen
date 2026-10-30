@@ -10,7 +10,7 @@ Listing copy and artwork for CurseForge and Modrinth. Nothing here ships in the 
 | [`curseforge/summary.txt`](curseforge/summary.txt) | Short project summary (223 characters) |
 | [`../patchnotes/1.0.0.md`](../patchnotes/1.0.0.md) | File changelog for 1.0.0 |
 
-Image links in the description point at `raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/...`, so they work once this folder is on `main`. To host on CurseForge instead, upload the images to the project gallery and replace each URL.
+Image and doc links in the description point at the `claude/zealous-brown-t1w0pv` branch (`raw.githubusercontent.com/MeherBenSalem/Hallowen/claude/zealous-brown-t1w0pv/marketing/images/...`), where the files are today. After merging to `main`, replace `claude/zealous-brown-t1w0pv` with `main` in `curseforge/description.md` and paste it again, before deleting the branch. To host on CurseForge instead, upload the images to the project gallery and replace each URL.
 
 The description leads with the pitch, then Hallowed Nights, trick-or-treating, the candy, carved faces and the lantern ward, spirits and wisps, the Hollow Horseman, his spoils, configuration, everything else, downloads and compatibility, the FAQ and a gallery.
 
