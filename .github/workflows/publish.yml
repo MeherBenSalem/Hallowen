@@ -23,11 +23,18 @@ on:
         description: Skip Modrinth (re-upload CurseForge only)
         required: false
         default: "false"
+      modrinth_only:
+        description: Skip CurseForge (upload to Modrinth only)
+        required: false
+        default: "false"
       minecraft_version:
         description: "Optional MC version filter (e.g. 26.3) — only upload matching jars"
         required: false
       modrinth_id:
         description: "Optional Modrinth project ID or slug; overrides the MODRINTH_ID repository variable"
+        required: false
+      curseforge_id:
+        description: "Optional numeric CurseForge project ID; overrides the CURSEFORGE_ID repository variable"
         required: false
 
 jobs:
@@ -217,8 +224,10 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           MODRINTH_ID: ${{ inputs.modrinth_id || vars.MODRINTH_ID }}
-          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          CURSEFORGE_ID: ${{ inputs.curseforge_id || vars.CURSEFORGE_ID }}
           CURSEFORGE_ONLY: ${{ inputs.curseforge_only }}
+          MODRINTH_ONLY: ${{ inputs.modrinth_only }}
         shell: bash
         run: |
           set -euo pipefail
@@ -239,8 +248,13 @@ jobs:
               if (!looksRight(p.title, p.slug)) fail(`MODRINTH_ID points at "${p.title}", not Hallowed.`);
               fs.appendFileSync(process.env.GITHUB_OUTPUT, `modrinth_id=${p.id}\n`);
             }
+            if (process.env.MODRINTH_ONLY === 'true') {
+              console.log('Skipping CurseForge (modrinth_only=true)');
+              return;
+            }
             const cf = (process.env.CURSEFORGE_ID || '').trim();
-            if (!/^\d+$/.test(cf)) fail(`CURSEFORGE_ID must be the numeric project ID, got "${cf}".`);
+            if (!/^\d+$/.test(cf)) fail(`No CurseForge project: set the CURSEFORGE_ID repository variable or the curseforge_id input to the numeric project ID (got "${cf}").`);
+            if (!process.env.CURSEFORGE_TOKEN) fail('The CURSEFORGE_TOKEN secret is not set.');
             if (process.env.CURSEFORGE_API_KEY) {
               const res = await fetch(`https://api.curseforge.com/v1/mods/${cf}`,
                 { headers: { 'x-api-key': process.env.CURSEFORGE_API_KEY, Accept: 'application/json' } });
@@ -261,7 +275,8 @@ jobs:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           MODRINTH_ID: ${{ steps.projects.outputs.modrinth_id }}
-          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
+          CURSEFORGE_ID: ${{ inputs.curseforge_id || vars.CURSEFORGE_ID }}
+          MODRINTH_ONLY: ${{ inputs.modrinth_only }}
           VERSION: ${{ steps.ver.outputs.version }}
           JAR_LIST: ${{ steps.jars.outputs.list }}
           CURSEFORGE_ONLY: ${{ inputs.curseforge_only }}
@@ -269,8 +284,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "${CURSEFORGE_ID:-}"
-          test -n "${MODRINTH_ID:-}" || test "${CURSEFORGE_ONLY:-}" = "true"
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
@@ -329,6 +342,10 @@ jobs:
               }
             } else {
               console.log('Skipping Modrinth (curseforge_only=true)');
+            }
+            if (process.env.MODRINTH_ONLY === 'true') {
+              console.log('Skipping CurseForge (modrinth_only=true)');
+              return;
             }
 
             const LOADER_IDS = { fabric: 7499, forge: 7498, neoforge: 10150 };
