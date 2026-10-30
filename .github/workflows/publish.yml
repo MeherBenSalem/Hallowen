@@ -206,13 +206,58 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Check the target projects
+        # Runs on dry runs too. Resolves both projects and refuses to go on unless they are Hallowed, so jars can
+        # never be uploaded into another mod's project by a mistyped or copied ID.
+        id: projects
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          MODRINTH_ID: ${{ vars.MODRINTH_ID }}
+          CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
+          CURSEFORGE_ONLY: ${{ inputs.curseforge_only }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const fail = (msg) => { console.error('::error::' + msg); process.exit(1); };
+          const looksRight = (...names) => names.some((n) => /hallowed/i.test(n || ''));
+          (async () => {
+            if (process.env.CURSEFORGE_ONLY !== 'true') {
+              const id = (process.env.MODRINTH_ID || '').trim();
+              if (!id) fail('The MODRINTH_ID repository variable is empty.');
+              if (!process.env.MODRINTH_TOKEN) fail('The MODRINTH_TOKEN secret is not set.');
+              const res = await fetch(`https://api.modrinth.com/v2/project/${encodeURIComponent(id)}`,
+                { headers: { Authorization: process.env.MODRINTH_TOKEN } });
+              if (!res.ok) fail(`Modrinth project "${id}" was not found (HTTP ${res.status}). MODRINTH_ID must be the project ID or slug of the Hallowed project, and MODRINTH_TOKEN must belong to one of its members.`);
+              const p = await res.json();
+              console.log(`Modrinth: "${p.title}" (slug ${p.slug}, id ${p.id}, status ${p.status})`);
+              if (!looksRight(p.title, p.slug)) fail(`MODRINTH_ID points at "${p.title}", not Hallowed.`);
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, `modrinth_id=${p.id}\n`);
+            }
+            const cf = (process.env.CURSEFORGE_ID || '').trim();
+            if (!/^\d+$/.test(cf)) fail(`CURSEFORGE_ID must be the numeric project ID, got "${cf}".`);
+            if (process.env.CURSEFORGE_API_KEY) {
+              const res = await fetch(`https://api.curseforge.com/v1/mods/${cf}`,
+                { headers: { 'x-api-key': process.env.CURSEFORGE_API_KEY, Accept: 'application/json' } });
+              if (!res.ok) fail(`CurseForge project ${cf} was not found (HTTP ${res.status}).`);
+              const m = (await res.json()).data;
+              console.log(`CurseForge: "${m.name}" (slug ${m.slug}, id ${m.id})`);
+              if (!looksRight(m.name, m.slug)) fail(`CURSEFORGE_ID points at "${m.name}", not Hallowed.`);
+            } else {
+              console.log(`::warning::No CURSEFORGE_API_KEY secret, so CurseForge project ${cf} could not be checked by name.`);
+            }
+          })().catch((e) => fail(String(e)));
+          NODE
+
       - name: Upload Modrinth + CurseForge
         if: ${{ inputs.dry_run != 'true' }}
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          MODRINTH_ID: ${{ vars.MODRINTH_ID }}
+          MODRINTH_ID: ${{ steps.projects.outputs.modrinth_id }}
           CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
           VERSION: ${{ steps.ver.outputs.version }}
           JAR_LIST: ${{ steps.jars.outputs.list }}
@@ -221,7 +266,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "${MODRINTH_ID:-}" && test -n "${CURSEFORGE_ID:-}"
+          test -n "${CURSEFORGE_ID:-}"
+          test -n "${MODRINTH_ID:-}" || test "${CURSEFORGE_ONLY:-}" = "true"
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
