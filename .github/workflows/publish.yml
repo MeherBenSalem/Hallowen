@@ -242,6 +242,9 @@ jobs:
           }
 
           const parsed = jars.map(parseJar);
+          const LOADER_NAMES = { fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge' };
+          // The Fabric build needs Fabric API (Modrinth project P7dR8mSH, CurseForge slug fabric-api).
+          const FABRIC_API_MODRINTH = 'P7dR8mSH';
           for (const p of parsed) {
             if (!p.game) throw new Error('Cannot parse MC version from ' + p.name);
           }
@@ -250,10 +253,10 @@ jobs:
             if (!curseforgeOnly) {
               for (const p of parsed) {
                 const body = {
-                  name: `Hallowed ${version}`,
+                  name: `Hallowed ${version} (${LOADER_NAMES[p.loader]})`,
                   version_number: version,
                   changelog,
-                  dependencies: [],
+                  dependencies: p.loader === 'fabric' ? [{ project_id: FABRIC_API_MODRINTH, dependency_type: 'required' }] : [],
                   game_versions: [p.game],
                   version_type: 'release',
                   loaders: [p.loader],
@@ -346,6 +349,9 @@ jobs:
                 gameVersions: [clientId, serverId, loaderId, gameId],
                 releaseType: 'release',
               };
+              if (p.loader === 'fabric') {
+                meta.relations = { projects: [{ slug: 'fabric-api', type: 'requiredDependency' }] };
+              }
               const cfForm = new FormData();
               cfForm.append('metadata', JSON.stringify(meta));
               cfForm.append('file', new Blob([fs.readFileSync(p.jar)]), p.name);
