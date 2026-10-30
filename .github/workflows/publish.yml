@@ -26,6 +26,9 @@ on:
       minecraft_version:
         description: "Optional MC version filter (e.g. 26.3) — only upload matching jars"
         required: false
+      modrinth_id:
+        description: "Optional Modrinth project ID or slug; overrides the MODRINTH_ID repository variable"
+        required: false
 
 jobs:
   publish:
@@ -213,7 +216,7 @@ jobs:
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          MODRINTH_ID: ${{ vars.MODRINTH_ID }}
+          MODRINTH_ID: ${{ inputs.modrinth_id || vars.MODRINTH_ID }}
           CURSEFORGE_ID: ${{ vars.CURSEFORGE_ID }}
           CURSEFORGE_ONLY: ${{ inputs.curseforge_only }}
         shell: bash
@@ -226,7 +229,7 @@ jobs:
           (async () => {
             if (process.env.CURSEFORGE_ONLY !== 'true') {
               const id = (process.env.MODRINTH_ID || '').trim();
-              if (!id) fail('The MODRINTH_ID repository variable is empty.');
+              if (!id) fail('No Modrinth project: set the MODRINTH_ID repository variable or the modrinth_id input.');
               if (!process.env.MODRINTH_TOKEN) fail('The MODRINTH_TOKEN secret is not set.');
               const res = await fetch(`https://api.modrinth.com/v2/project/${encodeURIComponent(id)}`,
                 { headers: { Authorization: process.env.MODRINTH_TOKEN } });
