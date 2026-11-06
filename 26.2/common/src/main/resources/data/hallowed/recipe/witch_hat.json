@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": "minecraft:leather",
+    "W": "minecraft:black_wool",
+    "S": "minecraft:gold_nugget"
+  },
+  "pattern": [
+    " L ",
+    " W ",
+    "WSW"
+  ],
+  "result": {
+    "id": "hallowed:witch_hat"
+  }
+}

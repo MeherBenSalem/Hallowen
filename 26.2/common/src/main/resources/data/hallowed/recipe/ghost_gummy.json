@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "hallowed:ectoplasm",
+    "minecraft:sugar",
+    "minecraft:slime_ball"
+  ],
+  "result": {
+    "id": "hallowed:ghost_gummy",
+    "count": 3
+  }
+}

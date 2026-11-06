@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": "minecraft:string",
+    "P": "minecraft:pumpkin",
+    "C": "minecraft:carved_pumpkin"
+  },
+  "pattern": [
+    "S S",
+    "P P",
+    " C "
+  ],
+  "result": {
+    "id": "hallowed:treat_pail"
+  }
+}
