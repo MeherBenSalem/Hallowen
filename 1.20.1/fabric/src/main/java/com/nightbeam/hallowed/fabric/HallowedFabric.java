@@ -9,6 +9,7 @@ import com.nightbeam.hallowed.network.HallowedPayload;
 import com.nightbeam.hallowed.platform.Platform;
 import com.nightbeam.hallowed.platform.Registrar;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
@@ -39,6 +40,14 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 public final class HallowedFabric implements ModInitializer {
     @Override
@@ -55,7 +64,30 @@ public final class HallowedFabric implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> HallowedEvents.onPlayerJoin(handler.getPlayer()));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> HallowedEvents.onPlayerLeave(handler.getPlayer()));
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> HallowedEvents.registerCommands(dispatcher, context));
+
+        // Vanilla gives spawn eggs their dispenser behaviour at bootstrap, before mod items exist.
+        for (Supplier<Item> egg : List.of(ModContent.SPIRIT_SPAWN_EGG, ModContent.WISP_SPAWN_EGG, ModContent.HORSEMAN_SPAWN_EGG)) {
+            DispenserBlock.registerBehavior(egg.get(), DISPENSE_EGG);
+        }
     }
+
+    /** The vanilla spawn egg dispense behaviour. */
+    private static final DispenseItemBehavior DISPENSE_EGG = new DefaultDispenseItemBehavior() {
+        @Override
+        public ItemStack execute(BlockSource source, ItemStack stack) {
+            Direction face = source.getBlockState().getValue(DispenserBlock.FACING);
+            EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
+            try {
+                type.spawn(source.getLevel(), stack, null, source.getPos().relative(face), MobSpawnType.DISPENSER, face != Direction.UP, false);
+            } catch (Exception e) {
+                LOGGER.error("Error while dispensing spawn egg from dispenser at {}", source.getPos(), e);
+                return ItemStack.EMPTY;
+            }
+            stack.shrink(1);
+            source.getLevel().gameEvent(null, GameEvent.ENTITY_PLACE, source.getPos());
+            return stack;
+        }
+    };
 
     private static final class FabricRegistrar implements Registrar {
         @Override
