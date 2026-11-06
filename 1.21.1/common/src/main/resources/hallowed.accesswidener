@@ -1,3 +1,5 @@
 accessWidener v2 named
 # Item model predicates (carved faces, the filled Treat Pail) are registered from common client code.
 accessible method net/minecraft/client/renderer/item/ItemProperties register (Lnet/minecraft/world/item/Item;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/renderer/item/ClampedItemPropertyFunction;)V
+# Mod spawn eggs are filed under their entity types after registration (pick block, see LazySpawnEggItem).
+accessible field net/minecraft/world/item/SpawnEggItem BY_ID Ljava/util/Map;

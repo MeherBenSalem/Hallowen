@@ -5,6 +5,7 @@ import com.nightbeam.hallowed.HallowedEvents;
 import com.nightbeam.hallowed.content.ModContent;
 import com.nightbeam.hallowed.entity.HollowHorseman;
 import com.nightbeam.hallowed.entity.Spirit;
+import com.nightbeam.hallowed.item.LazySpawnEggItem;
 import com.nightbeam.hallowed.network.FxPayload;
 import com.nightbeam.hallowed.network.NightPayload;
 import com.nightbeam.hallowed.platform.Platform;
@@ -25,6 +26,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
@@ -49,6 +51,7 @@ public final class HallowedNeoForge {
         registers.values().forEach(deferred -> deferred.register(modBus));
 
         modBus.addListener(this::registerPayloads);
+        modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(LazySpawnEggItem::finishSetup));
         modBus.addListener((EntityAttributeCreationEvent event) -> {
             event.put(ModContent.SPIRIT.get(), Spirit.createAttributes().build());
             event.put(ModContent.HOLLOW_HORSEMAN.get(), HollowHorseman.createAttributes().build());

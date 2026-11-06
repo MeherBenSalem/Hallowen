@@ -5,6 +5,7 @@ import com.nightbeam.hallowed.HallowedEvents;
 import com.nightbeam.hallowed.content.ModContent;
 import com.nightbeam.hallowed.entity.HollowHorseman;
 import com.nightbeam.hallowed.entity.Spirit;
+import com.nightbeam.hallowed.item.LazySpawnEggItem;
 import com.nightbeam.hallowed.network.FxPayload;
 import com.nightbeam.hallowed.network.NightPayload;
 import com.nightbeam.hallowed.platform.Platform;
@@ -53,6 +54,8 @@ public final class HallowedFabric implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> HallowedEvents.onPlayerJoin(handler.getPlayer()));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> HallowedEvents.onPlayerLeave(handler.getPlayer()));
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> HallowedEvents.registerCommands(dispatcher, context));
+
+        LazySpawnEggItem.finishSetup();
     }
 
     private static final class FabricRegistrar implements Registrar {
