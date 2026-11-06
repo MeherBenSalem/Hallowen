@@ -32,6 +32,9 @@ been left out, the **Hollow Horseman** rides. Mod id: `hallowed`.
 | Workspace | Minecraft | Loaders | Java |
 | --- | --- | --- | --- |
 | `26.3/` | 26.3 | Fabric, NeoForge | 25 |
+| `26.2/` | 26.2 | Fabric, NeoForge | 25 |
+| `1.21.1/` | 1.21.1 | Fabric, NeoForge | 21 |
+| `1.20.1/` | 1.20.1 | Fabric, Forge | 17 |
 
 Fabric needs Fabric API. Install the mod on both the server and the client: the server runs the nights, spawns and
 the boss, and the client draws the sky, banners and effects.
@@ -45,17 +48,18 @@ the boss, and the client draws the sky, banners and effects.
 ## Building
 
 ```bash
-cd 26.3 && ./gradlew build   # Java 25
+cd 26.3 && ./gradlew build     # also 26.2/ (Java 25), 1.21.1/ (Java 21), 1.20.1/ (Java 17)
 ```
 
-Jars land in `26.3/<loader>/build/libs/hallowed-<loader>-26.3-<version>.jar`. Release builds are copied to
+Jars land in `<workspace>/<loader>/build/libs/hallowed-<loader>-<minecraft>-<version>.jar`. Release builds are copied to
 [`releases/`](releases/).
 
 ## Tools
 
 - `python3 tools/assets/build.py 26.3` regenerates every texture, model, blockstate, sound, the music disc,
   language file, recipe, loot table, tag and advancement from code. Add `--no-sounds` to keep the audio as it is
-  (synthesising the music takes a while).
+  (synthesising the music takes a while). It writes the 26.x formats: the 1.21.1 and 1.20.1 workspaces keep their
+  own converted data and assets, so do not point it at them.
 - `tools/assets/preview.py` has the contact-sheet helper used to review generated art at a glance.
 - `tools/qa/prepare_runs.sh 26.3 <loader> tools/qa/options.txt`, then `tools/qa/devrun.sh start-server 26.3 <loader>` and
   `tools/qa/devrun.sh start-client 26.3 <loader>` run a dev server and client (RCON on 25575) under Xvfb for in-game

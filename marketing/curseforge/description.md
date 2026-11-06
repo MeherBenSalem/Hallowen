@@ -151,8 +151,11 @@ Two commented JSON files are created at launch. Missing keys are added and your 
 | Minecraft | Loaders | Java | Also install |
 | --- | --- | --- | --- |
 | 26.3 | Fabric, NeoForge | 25+ | Fabric API (on Fabric) |
+| 26.2 | Fabric, NeoForge | 25+ | Fabric API (on Fabric) |
+| 1.21.1 | Fabric, NeoForge | 21+ | Fabric API (on Fabric) |
+| 1.20.1 | Fabric, Forge | 17+ | Fabric API (on Fabric) |
 
-- Download the file with your loader in its name: `-fabric-` or `-neoforge-`.
+- Download the file with your loader in its name: `-fabric-`, `-neoforge-` or `-forge-`.
 - Install Hallowed on **both the server and every client**, at the same version.
 - Hallowed is a mod. It does not work as a Paper, Spigot or Folia plugin.
 
