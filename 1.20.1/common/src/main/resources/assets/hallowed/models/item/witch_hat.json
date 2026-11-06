@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hallowed:item/witch_hat"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "hallowed:worn": 1
+      },
+      "model": "hallowed:item/witch_hat_worn"
+    }
+  ]
+}

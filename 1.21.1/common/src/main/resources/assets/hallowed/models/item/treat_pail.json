@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hallowed:item/treat_pail"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "hallowed:filled": 0.0001
+      },
+      "model": "hallowed:item/treat_pail_filled"
+    }
+  ]
+}

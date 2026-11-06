@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "hallowed:cursed_pumpkin"
+    },
+    "title": {
+      "translate": "advancements.hallowed.cursed_pumpkin.title"
+    },
+    "description": {
+      "translate": "advancements.hallowed.cursed_pumpkin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hallowed:cursed_pumpkin"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has"
+    ]
+  ],
+  "parent": "hallowed:ghostbuster"
+}

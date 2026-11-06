@@ -4,7 +4,7 @@ Full notes for each release are in [patchnotes/](patchnotes/).
 
 ## 1.0.0: The First Hallowed Night
 
-**Supported platforms:** Minecraft 26.3 (Fabric, NeoForge)
+**Supported platforms:** Minecraft 26.3 and 26.2 (Fabric, NeoForge), 1.21.1 (Fabric, NeoForge), 1.20.1 (Fabric, Forge)
 
 The first release. See [patchnotes/1.0.0.md](patchnotes/1.0.0.md).
 

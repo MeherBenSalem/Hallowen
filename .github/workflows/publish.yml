@@ -315,7 +315,7 @@ jobs:
             if (!curseforgeOnly) {
               for (const p of parsed) {
                 const body = {
-                  name: `Hallowed ${version} (${LOADER_NAMES[p.loader]})`,
+                  name: `Hallowed ${version} (${LOADER_NAMES[p.loader]} ${p.game})`,
                   version_number: version,
                   changelog,
                   dependencies: p.loader === 'fabric' ? [{ project_id: FABRIC_API_MODRINTH, dependency_type: 'required' }] : [],

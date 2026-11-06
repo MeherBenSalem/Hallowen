@@ -1,5 +1,7 @@
 ![Hallowed 1.0: The First Hallowed Night](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/banner.png)
 
+**[Discord](https://discord.gg/TJc3CxR4jK) · [Source and issues](https://github.com/MeherBenSalem/Hallowen)**
+
 ## Light your lanterns
 
 **Hallowed** turns the nights of late October into an event. On a **Hallowed Night** the sky turns violet, embers and autumn leaves drift past, and a swollen orange **Harvest Moon** hangs over the world. Villagers answer the door with candy (or a trick), spirits drift out of the dark, will-o'-the-wisps lead you to buried treasure, and at midnight a bell strikes twelve. That is the **Witching Hour**, and if you have left a Cursed Pumpkin out, the **Hollow Horseman** rides.
@@ -30,7 +32,7 @@ Craft a **Treat Pail** (2 String, 2 Pumpkins and a Carved Pumpkin) and hold it o
 - **Come in costume** and 90% of doors treat you, with an extra piece. A costume is anything on your head from the `hallowed:costumes` tag: any carved pumpkin or jack o'lantern, a mob head, the Witch Hat or the Horseman's Head.
 - **Trick:** six harmless pranks. A burst of bats, a pumpkin stuck on your head for twenty seconds, a short float into the air, a jumpscare that leaves you Spooked, the villager vanishing in a puff of smoke, or sticky fingers that keep a piece from your pail.
 - Each villager answers the door once a night. **Wandering traders** always treat, and always slip in a Soul Toffee.
-- The pail holds candy only, and you can see the candy in it once it has some.
+- The pail holds candy and nothing else, and you can see the candy in it once it has some.
 
 ![The Candy](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/header-candy.png)
 
@@ -42,8 +44,8 @@ Craft a **Treat Pail** (2 String, 2 Pumpkins and a Carved Pumpkin) and hold it o
 | **Caramel Apple** | Regeneration, Absorption and a little Sugar Rush | Sugar over an Apple over a Stick |
 | **Ghost Gummy** | Invisibility and Slow Falling for 20 s | Ectoplasm, Sugar and a Slimeball (makes 3) |
 | **Pumpkin Truffle** | Cures Spooked and Sugar Crash, then Resistance and Fire Resistance | Pumpkin Pie, Cocoa Beans and Sugar (makes 2) |
-| **Witch's Lollipop** | A random hex: usually Speed, Haste, Jump Boost, Luck or another good one, sometimes a mischievous one | Treats and drops only |
-| **Bat Wing Licorice** | Night Vision, and every monster within 24 blocks glows | Treats and drops only |
+| **Witch's Lollipop** | A random hex: usually Speed, Haste, Jump Boost, Luck or another good one, sometimes a mischievous one | Not craftable: treats and drops |
+| **Bat Wing Licorice** | Night Vision, and every monster within 24 blocks glows | Not craftable: treats and drops |
 | **Eyeball Jawbreaker** | Strength for 45 s, but it takes a while to get through | A Spider Eye and 2 Sugar (makes 2) |
 | **Soul Toffee** | Spirit Ward for 2 minutes: spirits take you for one of their own | Ectoplasm, Sugar, a Honey Bottle and Soul Sand (makes 2) |
 
@@ -117,13 +119,13 @@ He has 320 health, 8 armor and hits for 11. If dawn breaks before you fell him, 
 - **Horseman's Head:** still burning. Wear it for Night Vision and Spirit Ward.
 - **Witch Hat:** a Gold Nugget, Leather and 3 Black Wool. The classic costume.
 - **Music Disc: Witching Hour,** an original waltz written for the mod (2:09).
-- **14 advancements,** from your first candy to *Headless No More* and *Grim Harvest* (reap nine crops in one swing).
+- **14 advancements,** from your opening candy to *Headless No More* and *Grim Harvest* (reap nine crops in one swing).
 
 ![Configuration](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/header-config.png)
 
 ![Every night your way](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/card-config.png)
 
-Two commented JSON files are created on first launch. Missing keys are added and your values are kept. `/hallowed reload` applies changes without a restart.
+Two commented JSON files are created at launch. Missing keys are added and your values are kept. `/hallowed reload` applies changes without a restart.
 
 - `config/hallowed/hallowed.json` (server):
   - `season`: `mode` (`seasonal`, `always`, `full_moons` or `manual`), the `start` and `end` dates and `offseason_full_moon_chance`.
@@ -142,15 +144,18 @@ Two commented JSON files are created on first launch. Missing keys are added and
 - **Spawn eggs** for the Horseman, spirits and wisps in the **Hallowed** creative tab, with every candy, face and block.
 - **Sounds:** around 30 new sound events, all with subtitles, from the wisps' chime to the Horseman's laugh.
 - **Datapack friendly:** costumes and costume wearers are tags (`hallowed:costumes`, `hallowed:costume_wearers`), and loot is in ordinary loot tables.
-- **Only the Overworld** (or any dimension with a day and a night) has Hallowed Nights.
+- Hallowed Nights come to **the Overworld** (or any dimension with a day and a night) and nowhere else.
 
 ![Downloads & Compatibility](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/header-compatibility.png)
 
 | Minecraft | Loaders | Java | Also install |
 | --- | --- | --- | --- |
-| 26.3 | Fabric, NeoForge | 25+ | Fabric API (Fabric only) |
+| 26.3 | Fabric, NeoForge | 25+ | Fabric API (on Fabric) |
+| 26.2 | Fabric, NeoForge | 25+ | Fabric API (on Fabric) |
+| 1.21.1 | Fabric, NeoForge | 21+ | Fabric API (on Fabric) |
+| 1.20.1 | Fabric, Forge | 17+ | Fabric API (on Fabric) |
 
-- Download the file with your loader in its name: `-fabric-` or `-neoforge-`.
+- Download the file with your loader in its name: `-fabric-`, `-neoforge-` or `-forge-`.
 - Install Hallowed on **both the server and every client**, at the same version.
 - Hallowed is a mod. It does not work as a Paper, Spigot or Folia plugin.
 
@@ -166,10 +171,10 @@ A banner at dusk, the violet sky and the Harvest Moon. `/hallowed` tells you too
 Light jack o'lanterns: nothing spawns within 12 blocks of one, 20 of a soul one. Soul Toffee and the Horseman's Head make spirits ignore you.
 
 **The Cursed Pumpkin does nothing.**
-It only wakes at the Witching Hour (midnight to 3 AM) of a Hallowed Night, in the Overworld, not on Peaceful, and not while another Horseman rides within 160 blocks. Use it to read what it is waiting for. Set `summon_needs_witching_hour` to `false` to wake it on any night.
+It wakes at the Witching Hour and no other time (midnight to 3 AM) of a Hallowed Night, in the Overworld, not on Peaceful, and not while another Horseman rides within 160 blocks. Use it to read what it is waiting for. Set `summon_needs_witching_hour` to `false` to wake it on any night.
 
 **Will the Horseman burn my base?**
-No. His jack o'lanterns only set fires if you turn `sets_fires` on, and never in spawn protection.
+No. His jack o'lanterns set fires just if you turn `sets_fires` on, and never in spawn protection.
 
 **The jumpscare is too much.**
 Set `jumpscares` to `false` in `config/hallowed/client.json`. You still hear the trick. Or turn the spook trick off for the whole server in `hallowed.json`.
@@ -216,3 +221,15 @@ Set `jumpscares` to `false` in `config/hallowed/client.json`. You still hear the
 ---
 
 Hallowed is licensed under Apache-2.0. The Grenze Gotisch and Spectral fonts used in this artwork are licensed under the SIL Open Font License 1.1.
+
+---
+
+### More from NightBeam Studio
+
+- **[Remnants: Ashen Legacy](https://www.curseforge.com/minecraft/modpacks/remnants-ashen-legacy)**: the story-driven soulslike RPG modpack built on NightBeam's mods
+- **[Premium server plugins](https://nightbeam.dev/store)**: anti-cheat, ranked PvP, SMP setups and more on BuiltByBit
+- **[NightBeam Pro](https://nightbeam.dev/memberships)**: the model library and NightBeam Forge credits, from $5 a month
+- **[Discord](https://discord.gg/TJc3CxR4jK)**: support, bug reports, suggestions and early looks
+- **[Support NightBeam](https://nightbeam.dev/support)**: help keep every mod free
+
+**Follow:** [YouTube](https://www.youtube.com/@nightbeamstudio) · [Instagram](https://www.instagram.com/nightbeamstudio/) · [X](https://x.com/NightBeamLLC) · [Facebook](https://www.facebook.com/profile.php?id=61574823331471)
