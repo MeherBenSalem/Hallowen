@@ -1,0 +1,53 @@
+{
+  "parent": "hallowed:block/lit_grin",
+  "overrides": [
+    {
+      "predicate": {
+        "hallowed:face": 0.0
+      },
+      "model": "hallowed:block/lit_classic"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.1
+      },
+      "model": "hallowed:block/lit_grin"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.2
+      },
+      "model": "hallowed:block/lit_fangs"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.3
+      },
+      "model": "hallowed:block/lit_cat"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.4
+      },
+      "model": "hallowed:block/lit_scream"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.5
+      },
+      "model": "hallowed:block/lit_wink"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.6
+      },
+      "model": "hallowed:block/lit_skull"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.7
+      },
+      "model": "hallowed:block/lit_bat"
+    }
+  ]
+}

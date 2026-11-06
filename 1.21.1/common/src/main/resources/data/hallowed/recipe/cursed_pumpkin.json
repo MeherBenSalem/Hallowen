@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "hallowed:ectoplasm"
+    },
+    "B": {
+      "item": "minecraft:bone"
+    },
+    "J": {
+      "item": "hallowed:soul_jack_o_lantern"
+    }
+  },
+  "pattern": [
+    "EBE",
+    "EJE",
+    "EBE"
+  ],
+  "result": {
+    "id": "hallowed:cursed_pumpkin"
+  }
+}

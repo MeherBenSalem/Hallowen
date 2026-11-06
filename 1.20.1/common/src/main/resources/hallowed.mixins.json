@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.nightbeam.hallowed.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BlockBehaviourMixin",
+    "CarvedPumpkinBlockMixin",
+    "EnderManMixin",
+    "MobMixin",
+    "VillagerMixin",
+    "WanderingTraderMixin"
+  ],
+  "client": [
+    "client.CameraMixin",
+    "client.ClientLevelMixin",
+    "client.DimensionSpecialEffectsMixin",
+    "client.FogRendererMixin",
+    "client.HudMixin",
+    "client.ItemRendererMixin",
+    "client.LevelRendererMixin",
+    "client.LightTextureMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

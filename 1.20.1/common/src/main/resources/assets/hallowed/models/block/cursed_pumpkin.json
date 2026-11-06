@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "hallowed:block/cursed_pumpkin_front",
+    "side": "hallowed:block/cursed_pumpkin_side",
+    "top": "hallowed:block/cursed_pumpkin_top"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "parent": "hallowed:block/lit_classic",
+  "overrides": [
+    {
+      "predicate": {
+        "hallowed:face": 0.0714
+      },
+      "model": "hallowed:block/lit_grin"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.2143
+      },
+      "model": "hallowed:block/lit_fangs"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.3571
+      },
+      "model": "hallowed:block/lit_cat"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.5
+      },
+      "model": "hallowed:block/lit_scream"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.6429
+      },
+      "model": "hallowed:block/lit_wink"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.7857
+      },
+      "model": "hallowed:block/lit_skull"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.9286
+      },
+      "model": "hallowed:block/lit_bat"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:sugar"
+    },
+    "A": {
+      "item": "minecraft:apple"
+    },
+    "T": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "S",
+    "A",
+    "T"
+  ],
+  "result": {
+    "item": "hallowed:caramel_apple"
+  }
+}

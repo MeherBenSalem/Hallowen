@@ -1,0 +1,53 @@
+{
+  "parent": "hallowed:block/soul_grin",
+  "overrides": [
+    {
+      "predicate": {
+        "hallowed:face": 0.0
+      },
+      "model": "hallowed:block/soul_classic"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.1
+      },
+      "model": "hallowed:block/soul_grin"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.2
+      },
+      "model": "hallowed:block/soul_fangs"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.3
+      },
+      "model": "hallowed:block/soul_cat"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.4
+      },
+      "model": "hallowed:block/soul_scream"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.5
+      },
+      "model": "hallowed:block/soul_wink"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.6
+      },
+      "model": "hallowed:block/soul_skull"
+    },
+    {
+      "predicate": {
+        "hallowed:face": 0.7
+      },
+      "model": "hallowed:block/soul_bat"
+    }
+  ]
+}
