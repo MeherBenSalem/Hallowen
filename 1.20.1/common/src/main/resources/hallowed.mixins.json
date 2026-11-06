@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "com.nightbeam.hallowed.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "${mod_id}.refmap.json",
   "mixins": [
     "BlockBehaviourMixin",
     "CarvedPumpkinBlockMixin",

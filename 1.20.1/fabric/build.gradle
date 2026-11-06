@@ -36,7 +36,7 @@ loom {
             setConfigName('Fabric QA Client')
             ideConfigGenerated(false)
             runDir('runs/client')
-            programArgs('--quickPlayMultiplayer', 'localhost:25565', '--username', 'Trickster', '--width', '1920', '--height', '1080')
+            programArgs('--quickPlayMultiplayer', "localhost:${project.findProperty('qaPort') ?: 25565}", '--username', 'Trickster', '--width', '1920', '--height', '1080')
         }
     }
 }

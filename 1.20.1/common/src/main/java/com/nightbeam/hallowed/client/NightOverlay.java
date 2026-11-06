@@ -111,20 +111,21 @@ public final class NightOverlay {
         if (ModContent.CARVED_PUMPKIN_ITEM == null || !minecraft.player.getItemBySlot(EquipmentSlot.HEAD).is(ModContent.CARVED_PUMPKIN_ITEM.get())) return;
         int width = graphics.guiWidth(), height = graphics.guiHeight();
         RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
         blit(graphics, PUMPKIN_BLUR, 0, 0, width, height, 1, 1, 1, 1);
-        RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
     }
 
     /** Draws a whole texture stretched over a rectangle, tinted and faded. */
     private static void blit(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height, float alpha, float r, float g,
             float b) {
+        // Like vanilla's own screen overlays: blended, and never writing depth (which would hide HUD text drawn later).
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.depthMask(false);
         graphics.setColor(r, g, b, alpha);
         graphics.blit(texture, x, y, 0, 0, width, height, width, height);
         graphics.setColor(1, 1, 1, 1);
+        RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
     }
 

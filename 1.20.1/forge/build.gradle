@@ -27,7 +27,7 @@ legacyForge {
         qaClient {
             client()
             gameDirectory = this.mkdir(this.file('runs/client'))
-            programArguments.addAll '--quickPlayMultiplayer', 'localhost:25565', '--username', 'Trickster', '--width', '1920', '--height', '1080'
+            programArguments.addAll '--quickPlayMultiplayer', "localhost:${project.findProperty('qaPort') ?: 25565}", '--username', 'Trickster', '--width', '1920', '--height', '1080'
         }
     }
     mods {
