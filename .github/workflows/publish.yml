@@ -31,10 +31,10 @@ on:
         description: "Optional MC version filter (e.g. 26.3) — only upload matching jars"
         required: false
       modrinth_id:
-        description: "Optional Modrinth project ID or slug; overrides the MODRINTH_ID repository variable"
+        description: "Optional Modrinth project ID or slug; overrides the MODRINTH_ID repository variable (default rxsWDq2O)"
         required: false
       curseforge_id:
-        description: "Optional numeric CurseForge project ID; overrides the CURSEFORGE_ID repository variable"
+        description: "Optional numeric CurseForge project ID; overrides the CURSEFORGE_ID repository variable (default 1773771)"
         required: false
 
 jobs:
@@ -223,9 +223,9 @@ jobs:
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          MODRINTH_ID: ${{ inputs.modrinth_id || vars.MODRINTH_ID }}
+          MODRINTH_ID: ${{ inputs.modrinth_id || vars.MODRINTH_ID || 'rxsWDq2O' }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
-          CURSEFORGE_ID: ${{ inputs.curseforge_id || vars.CURSEFORGE_ID }}
+          CURSEFORGE_ID: ${{ inputs.curseforge_id || vars.CURSEFORGE_ID || '1773771' }}
           CURSEFORGE_ONLY: ${{ inputs.curseforge_only }}
           MODRINTH_ONLY: ${{ inputs.modrinth_only }}
         shell: bash
@@ -275,7 +275,7 @@ jobs:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           MODRINTH_ID: ${{ steps.projects.outputs.modrinth_id }}
-          CURSEFORGE_ID: ${{ inputs.curseforge_id || vars.CURSEFORGE_ID }}
+          CURSEFORGE_ID: ${{ inputs.curseforge_id || vars.CURSEFORGE_ID || '1773771' }}
           MODRINTH_ONLY: ${{ inputs.modrinth_only }}
           VERSION: ${{ steps.ver.outputs.version }}
           JAR_LIST: ${{ steps.jars.outputs.list }}
