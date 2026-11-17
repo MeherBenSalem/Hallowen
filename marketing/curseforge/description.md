@@ -1,6 +1,6 @@
 ![Hallowed 1.0: The First Hallowed Night](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/banner.png)
 
-**[Discord](https://discord.gg/TJc3CxR4jK) · [Source and issues](https://github.com/MeherBenSalem/Hallowen)**
+**[Docs](https://nightbeam.dev/docs/hallowed) · [Discord](https://discord.gg/TJc3CxR4jK) · [Source and issues](https://github.com/MeherBenSalem/Hallowen)**
 
 ## Light your lanterns
 
