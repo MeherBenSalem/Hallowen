@@ -10,6 +10,9 @@ const { chromium } = require('playwright');
 // (plus one row in the compatibility table of curseforge/description.md).
 const RELEASE = { version: '1.0', name: 'The First Hallowed Night' };
 const VERSIONS = [
+  { minecraft: '1.20.1', loaders: ['Fabric', 'Forge'] },
+  { minecraft: '1.21.1', loaders: ['Fabric', 'NeoForge'] },
+  { minecraft: '26.2', loaders: ['Fabric', 'NeoForge'] },
   { minecraft: '26.3', loaders: ['Fabric', 'NeoForge'] },
 ];
 const LOADERS = ['Fabric', 'Forge', 'NeoForge'].filter((loader) => VERSIONS.some((v) => v.loaders.includes(loader)));
@@ -136,7 +139,7 @@ const CANDIES = [
   ['soul_toffee', 'Soul Toffee', 'Spirit Ward for 2 minutes'],
 ];
 
-const versionText = VERSIONS.map((v) => 'Minecraft ' + v.minecraft).join(' · ');
+const versionText = 'Minecraft ' + VERSIONS.map((v) => v.minecraft).join(' · ');
 
 const assets = {
   banner: () => page(1800, 600, `

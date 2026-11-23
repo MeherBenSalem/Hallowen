@@ -180,7 +180,7 @@ No. His jack o'lanterns set fires just if you turn `sets_fires` on, and never in
 Set `jumpscares` to `false` in `config/hallowed/client.json`. You still hear the trick. Or turn the spook trick off for the whole server in `hallowed.json`.
 
 **Where are the docs?**
-[Usage guide](https://github.com/MeherBenSalem/Hallowen/blob/main/docs/USAGE.md) · [Release notes](https://github.com/MeherBenSalem/Hallowen/blob/main/patchnotes/1.0.0.md) · [Issues](https://github.com/MeherBenSalem/Hallowen/issues)
+[Usage guide](https://github.com/MeherBenSalem/Hallowen/blob/main/docs/USAGE.md) · [Release notes](https://github.com/MeherBenSalem/Hallowen/blob/main/PATCH_NOTES.md) · [Issues](https://github.com/MeherBenSalem/Hallowen/issues)
 
 ![Gallery](https://raw.githubusercontent.com/MeherBenSalem/Hallowen/main/marketing/images/header-gallery.png)
 

@@ -4,6 +4,9 @@
 
 Security fixes are applied to the latest release of Hallowed for the actively maintained Minecraft targets:
 
+- Minecraft 1.20.1 (Fabric, Forge)
+- Minecraft 1.21.1 (Fabric, NeoForge)
+- Minecraft 26.2 (Fabric, NeoForge)
 - Minecraft 26.3 (Fabric, NeoForge)
 
 Older releases may not receive backports.
@@ -17,7 +20,7 @@ on this repository whenever possible.
 
 Include:
 
-- Affected Minecraft version and loader (Fabric / NeoForge)
+- Affected Minecraft version and loader (Fabric / Forge / NeoForge)
 - Mod version
 - Steps to reproduce
 - Impact assessment

@@ -29,12 +29,14 @@ been left out, the **Hollow Horseman** rides. Mod id: `hallowed`.
 
 ## Requirements
 
-| Workspace | Minecraft | Loaders | Java |
+These are the only supported targets (the NightBeam convention): 8 jars per release, all with the same version.
+
+| Minecraft | Loaders | Java | Folder |
 | --- | --- | --- | --- |
-| `26.3/` | 26.3 | Fabric, NeoForge | 25 |
-| `26.2/` | 26.2 | Fabric, NeoForge | 25 |
-| `1.21.1/` | 1.21.1 | Fabric, NeoForge | 21 |
-| `1.20.1/` | 1.20.1 | Fabric, Forge | 17 |
+| 1.20.1 | Forge, Fabric | 17 bytecode (build on 21) | `1.20.1/{common,forge,fabric}` |
+| 1.21.1 | NeoForge, Fabric | 21 | `1.21.1/{common,neoforge,fabric}` |
+| 26.2 | NeoForge, Fabric | 25 | `26.2/{common,neoforge,fabric}` |
+| 26.3 | NeoForge, Fabric | 25 | `26.3/{common,neoforge,fabric}` |
 
 Fabric needs Fabric API. Install the mod on both the server and the client: the server runs the nights, spawns and
 the boss, and the client draws the sky, banners and effects.
@@ -42,17 +44,43 @@ the boss, and the client draws the sky, banners and effects.
 ## Documentation
 
 - [docs/USAGE.md](docs/USAGE.md): how every system works, every recipe, config key and command
-- [PATCH_NOTES.md](PATCH_NOTES.md) and [patchnotes/1.0.0.md](patchnotes/1.0.0.md): what changed
+- [PATCH_NOTES.md](PATCH_NOTES.md) and [patchnotes/](patchnotes/): what changed in each version
 - [marketing/](marketing/): CurseForge and Modrinth page, summary, artwork and screenshots
 
 ## Building
 
+Each Minecraft version is a separate MultiLoader Gradle workspace with its own wrapper; the root build drives all four.
+
 ```bash
-cd 26.3 && ./gradlew build     # also 26.2/ (Java 25), 1.21.1/ (Java 21), 1.20.1/ (Java 17)
+./gradlew buildAll                    # every workspace, then the 8 loader jars into releases/
+cd 1.20.1 && ./gradlew build          # Gradle on Java 21 (Java 17 toolchain)
+cd 1.21.1 && ./gradlew build          # Java 21
+cd 26.3 && ./gradlew build            # Java 25 (the same for 26.2)
+cd 26.3 && ./gradlew :common:test     # config and night-clock unit tests
 ```
 
-Jars land in `<workspace>/<loader>/build/libs/hallowed-<loader>-<minecraft>-<version>.jar`. Release builds are copied to
-[`releases/`](releases/).
+The root build hands the 26.x workspaces `JAVA_HOME_25_X64` (or `-Pjava25Home=<jdk>`) and the others
+`JAVA_HOME_21_X64` (or `-Pjava21Home=<jdk>`); without them each workspace uses the current `JAVA_HOME`.
+Jars land in `<workspace>/<loader>/build/libs/hallowed-<loader>-<minecraft>-<version>.jar`. Every workspace's
+`gradle.properties` carries the same `version=` (`./gradlew checkVersions`; set it with
+`./gradlew syncVersion -PmodVersion=x.y.z`). `python3 scripts/check_targets.py workspaces` checks the targets, the
+shared version and the metadata ranges. Release notes for a version live in `patchnotes/<version>.md`.
+`releases/` keeps the jars of published versions (1.0.0) as history; newer versions are built by CI and Publish.
+
+## Releasing
+
+CI (`.github/workflows/ci.yml`) builds all 8 jars on every push to `main` that touches the build, runs the unit tests
+and the publisher script tests, and boots a 1.20.1 dev server with the mod loaded
+(`scripts/server-smoke-test.sh 1.20.1 fabric`). Publishing to Modrinth and CurseForge is
+`.github/workflows/publish.yml`, run by hand (`version`, `dry_run`) or by a `v*.*.*` tag; it never runs on a plain
+push. It refuses a second release of the mod on the same day (Africa/Tunis), takes the jars from `releases/`, the
+GitHub Release or a build from source, and fails unless exactly the 8 jars are found. It needs the secrets
+`MODRINTH_TOKEN`, `CURSEFORGE_TOKEN`, `CURSEFORGE_API_KEY` and the variables `MODRINTH_ID`, `CURSEFORGE_ID` (it falls
+back to the Hallowed projects, `rxsWDq2O` and `1773771`). Prove a change with a dry run first:
+
+```bash
+gh workflow run publish.yml -f version=1.0.1 -f dry_run=true
+```
 
 ## Tools
 

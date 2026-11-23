@@ -1,0 +1,138 @@
+# CI for Hallowed (NightBeam convention; based on Bosses' publisher-checks.yml).
+# Builds all 8 jars (1.20.1 Fabric + Forge; 1.21.1, 26.2, 26.3 Fabric + NeoForge) with ./gradlew buildAll,
+# runs each workspace's unit tests (part of `build`), checks that every workspace has the same version= and
+# that the metadata ranges stay inside their Minecraft line, runs the publisher script tests (the same-day guard),
+# checks that the Modrinth copy matches the CurseForge copy, and boots a 1.20.1 dev server with the mod loaded.
+# It replaces build.yml and nightbeam-build.yml, which built each workspace on its own. It never publishes anything.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "1.20.1/**"
+      - "1.21.1/**"
+      - "26.2/**"
+      - "26.3/**"
+      - "scripts/**"
+      - "tools/make_modrinth_md.py"
+      - "marketing/curseforge/**"
+      - "marketing/modrinth/**"
+      - "build.gradle"
+      - "settings.gradle"
+      - "gradle.properties"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "releases/**"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Check publisher syntax
+        run: |
+          for f in scripts/*.mjs; do node --check "$f"; done
+      - name: Test publisher scripts (same-day guard)
+        run: node --test scripts/*.test.mjs
+      - name: Check the 8 targets, one version and metadata ranges
+        run: python3 scripts/check_targets.py workspaces
+      - name: Check the releases/ jars of earlier versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          # releases/ keeps the jars of published versions as history; each version there must be a full set of 8.
+          shopt -s nullglob
+          versions=$(for jar in releases/hallowed-*.jar; do basename "$jar" .jar | sed -E 's/.*-//'; done | sort -u)
+          for v in $versions; do python3 scripts/check_targets.py jars --version "$v" --dir releases > /dev/null; echo "releases/: 8 jars for $v"; done
+      - name: Check the Modrinth copy is up to date
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/make_modrinth_md.py .
+          if ! git diff --exit-code -- marketing/modrinth; then
+            echo "::error::marketing/modrinth/ is out of date; run python3 tools/make_modrinth_md.py . and commit it"
+            exit 1
+          fi
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 21 stays JAVA_HOME (Gradle for 1.20.1/1.21.1); 17 is the 1.20.1 toolchain; the root build hands 26.x
+      # JAVA_HOME_25_X64.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            25
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build all 8 jars and run the unit tests
+        run: |
+          chmod +x gradlew 1.20.1/gradlew 1.21.1/gradlew 26.2/gradlew 26.3/gradlew
+          ./gradlew buildAll --no-daemon
+      - name: Check the 8 jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(python3 scripts/check_targets.py version)"
+          # releases/ also keeps the jars of earlier releases (history), so check what this build produced in
+          # <workspace>/<loader>/build/libs.
+          mkdir -p built-jars ci-jars
+          cp -f */*/build/libs/hallowed-*-"$version".jar built-jars/
+          python3 scripts/check_targets.py jars --version "$version" --dir built-jars --list-file ci-jars.txt
+          xargs -a ci-jars.txt cp -f -t ci-jars/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hallowed-jars
+          path: ci-jars/*.jar
+          if-no-files-found: error
+
+  # Starts a real dev server with Hallowed loaded, so the 1.20.1 mixins, registries, commands and the spawn egg
+  # dispenser behaviour run (a compile alone can't prove a mixin target exists). Forge 1.20.1's dev server can stop
+  # before the world loads for reasons outside the mod, so that row only reports.
+  server-test:
+    name: Server test, ${{ matrix.loader }} ${{ matrix.minecraft }}
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.optional }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { minecraft: "1.20.1", loader: fabric, java: "17", optional: false }
+          - { minecraft: "1.20.1", loader: forge, java: "17", optional: true }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            ${{ matrix.java }}
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x ${{ matrix.minecraft }}/gradlew scripts/server-smoke-test.sh
+      - name: Boot a server with Hallowed and run its commands and spawn eggs
+        timeout-minutes: 25
+        run: scripts/server-smoke-test.sh ${{ matrix.minecraft }} ${{ matrix.loader }}
+      - name: Keep the server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-smoke-${{ matrix.minecraft }}-${{ matrix.loader }}
+          path: server-smoke-*.log
+          if-no-files-found: ignore

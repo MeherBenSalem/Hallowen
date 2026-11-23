@@ -2,6 +2,16 @@
 
 Full notes for each release are in [patchnotes/](patchnotes/).
 
+## 1.0.1
+
+**Supported platforms:** Minecraft 26.3 and 26.2 (Fabric, NeoForge), 1.21.1 (Fabric, NeoForge), 1.20.1 (Fabric, Forge)
+
+* Dispensers now hatch the Spirit, Will-o'-the-Wisp and Hollow Horseman spawn eggs on 1.21.1 (Fabric, NeoForge) and
+  1.20.1 Fabric, instead of spitting them out as items.
+* On 1.21.1, middle-clicking a Spirit or the Hollow Horseman in creative mode gives you its spawn egg.
+
+Full notes: [patchnotes/1.0.1.md](patchnotes/1.0.1.md).
+
 ## 1.0.0: The First Hallowed Night
 
 **Supported platforms:** Minecraft 26.3 and 26.2 (Fabric, NeoForge), 1.21.1 (Fabric, NeoForge), 1.20.1 (Fabric, Forge)

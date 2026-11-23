@@ -1,36 +1,73 @@
-# Build / Gradle
+# Gradle
 .gradle/
-**/build/
-/build/
-bin/
+build/
+!gradle/wrapper/gradle-wrapper.jar
 
-# Runs / IDE
-run/
-runs/
-.idea/
-.vscode/
-.eclipse/
+# Eclipse
+.metadata/
 .settings/
-*.iml
-*.ipr
-*.iws
 .classpath
 .project
+bin/
 
-# Release / secrets / generated
-dist/
-graphify-out/
-.env
-.env.*
-secrets/
-*.log
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
 
-# OS
-Thumbs.db
-Desktop.ini
+# VS Code / Cursor
+.vscode/
+*.code-workspace
+.cursor/
+
+# MacOS
 .DS_Store
 
-# Generated asset cache and Python bytecode
-tools/assets/.cache/
-__pycache__/
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
 logs/
+*.log
+build_log.txt
+build_output.txt
+dep_warning.txt
+debug.log
+
+# Run folders
+run/
+runs/
+/test/
+
+# Archives / built artifacts (do not commit jars, except the release jars the publish workflow uploads)
+*.jar
+!releases/*.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+dist/
+
+# Keep the Gradle wrapper jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Temp
+input.txt
+output.txt
+
+# Python
+__pycache__/
+
+# Hallowed: generated asset cache, local tool output, secrets
+tools/assets/.cache/
+graphify-out/
+secrets/
