@@ -2,7 +2,7 @@
 # Builds all 8 jars (1.20.1 Fabric + Forge; 1.21.1, 26.2, 26.3 Fabric + NeoForge) with ./gradlew buildAll,
 # runs each workspace's unit tests (part of `build`), checks that every workspace has the same version= and
 # that the metadata ranges stay inside their Minecraft line, runs the publisher script tests (the same-day guard),
-# checks that the Modrinth copy matches the CurseForge copy, and boots a 1.20.1 dev server with the mod loaded.
+# and boots a 1.20.1 dev server with the mod loaded.
 # It replaces build.yml and nightbeam-build.yml, which built each workspace on its own. It never publishes anything.
 
 name: CI
@@ -16,9 +16,7 @@ on:
       - "26.2/**"
       - "26.3/**"
       - "scripts/**"
-      - "tools/make_modrinth_md.py"
       - "marketing/curseforge/**"
-      - "marketing/modrinth/**"
       - "build.gradle"
       - "settings.gradle"
       - "gradle.properties"
@@ -58,15 +56,6 @@ jobs:
           shopt -s nullglob
           versions=$(for jar in releases/hallowed-*.jar; do basename "$jar" .jar | sed -E 's/.*-//'; done | sort -u)
           for v in $versions; do python3 scripts/check_targets.py jars --version "$v" --dir releases > /dev/null; echo "releases/: 8 jars for $v"; done
-      - name: Check the Modrinth copy is up to date
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 tools/make_modrinth_md.py .
-          if ! git diff --exit-code -- marketing/modrinth; then
-            echo "::error::marketing/modrinth/ is out of date; run python3 tools/make_modrinth_md.py . and commit it"
-            exit 1
-          fi
 
   build:
     runs-on: ubuntu-latest

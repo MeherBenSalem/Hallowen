@@ -45,7 +45,7 @@ the boss, and the client draws the sky, banners and effects.
 
 - [docs/USAGE.md](docs/USAGE.md): how every system works, every recipe, config key and command
 - [PATCH_NOTES.md](PATCH_NOTES.md) and [patchnotes/](patchnotes/): what changed in each version
-- [marketing/](marketing/): CurseForge and Modrinth page, summary, artwork and screenshots
+- [marketing/](marketing/): CurseForge page, summary, artwork and screenshots
 
 ## Building
 
@@ -71,12 +71,13 @@ shared version and the metadata ranges. Release notes for a version live in `pat
 
 CI (`.github/workflows/ci.yml`) builds all 8 jars on every push to `main` that touches the build, runs the unit tests
 and the publisher script tests, and boots a 1.20.1 dev server with the mod loaded
-(`scripts/server-smoke-test.sh 1.20.1 fabric`). Publishing to Modrinth and CurseForge is
+(`scripts/server-smoke-test.sh 1.20.1 fabric`). Publishing to CurseForge is
 `.github/workflows/publish.yml`, run by hand (`version`, `dry_run`) or by a `v*.*.*` tag; it never runs on a plain
 push. It refuses a second release of the mod on the same day (Africa/Tunis), takes the jars from `releases/`, the
 GitHub Release or a build from source, and fails unless exactly the 8 jars are found. It needs the secrets
-`MODRINTH_TOKEN`, `CURSEFORGE_TOKEN`, `CURSEFORGE_API_KEY` and the variables `MODRINTH_ID`, `CURSEFORGE_ID` (it falls
-back to the Hallowed projects, `rxsWDq2O` and `1773771`). Prove a change with a dry run first:
+`CURSEFORGE_TOKEN` (upload token) and `CURSEFORGE_API_KEY` (Core API key) and the variable `CURSEFORGE_ID` (it falls
+back to the Hallowed project, `1773771`). NightBeam publishes to CurseForge only; the Modrinth page stays up but gets
+no new versions. Prove a change with a dry run first:
 
 ```bash
 gh workflow run publish.yml -f version=1.0.1 -f dry_run=true
